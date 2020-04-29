@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include "asmparser.h"
+#include "mifserializer.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,7 +42,7 @@ void MainWindow::on_actionAbout_BetterTRN_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString file = QFileDialog::getOpenFileName(this, tr("Open ASM file"), QString(), "*.asm");
+    QString file = QFileDialog::getOpenFileName(this, tr("Open file"), QString(), tr("Assembly (*.asm);;Memory Image (*mif)"));
     // Return if the dialog was cancelled
     if(file.isEmpty())
         return;
@@ -81,7 +82,7 @@ void MainWindow::fileChangedOnDisk(QString file)
 int MainWindow::loadNewFile(QString file)
 {
     QFile f(file);
-    if(!f.open(QIODevice::ReadOnly))
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::critical(this, tr("Error opening file"), tr("Could not open the selected file"));
         return 1;
@@ -98,21 +99,31 @@ int MainWindow::loadNewFile(QString file)
         fswatcher.removePaths(oldfiles);
 
     fswatcher.addPath(file);
-    int line = AsmParser::Parse(f, pgmmem);
+    // Clear the vector before loading the new file
+    pgmmem.clear();
+    // Call the correct function for asm or mif
+    // FIXME: Maybe in the future use content autodetect instead of the file extension
+    int line = (file.toLower().endsWith(".asm") ? AsmParser::Parse(f, pgmmem) : MifSerializer::MifToVector(f, pgmmem));
     if(line)
+    {
         QMessageBox::critical(this, tr("Parse error"), tr("Parse error in line %1").arg(QString::number(line)), QMessageBox::Ok);
+        return 1;
+    }
     qDebug() << pgmmem;
 
-    // FIXME: move this to a new funtion
+    // FIXME: move this to a new function
+    // FIXME: Use a View Model or make it more efficient
+    ui->memoryTable->setRowCount(0);
 
+    int row = ui->memoryTable->rowCount();
     for(int i = 0; i < pgmmem.size(); i++)
     {
-        int row = ui->memoryTable->rowCount();
         ui->memoryTable->insertRow(row);
         QTableWidgetItem* addr = new QTableWidgetItem(QString::number(i));
         QTableWidgetItem* memcontent = new QTableWidgetItem(QString("%1").arg(pgmmem.at(i), 20, 2, QChar('0')));
         ui->memoryTable->setItem(row, 0, addr);
         ui->memoryTable->setItem(row, 1, memcontent);
+        row++;
     }
 
     return 0;
@@ -122,15 +133,37 @@ void MainWindow::on_startStopBtn_clicked()
 {
     if(emu)
     {
-        ui->startStopBtn->setText(tr("Start"));
         emu->requestInterruption();
-        emu->wait();
-        emu->deleteLater();
-        emu = nullptr;
         return;
     }
 
     ui->startStopBtn->setText(tr("Stop"));
     emu = new TrnEmu(500, pgmmem, this);
+    connect(emu, &QThread::finished, this, &MainWindow::emuThreadStopped);
     emu->start();
+}
+
+void MainWindow::emuThreadStopped()
+{
+    ui->startStopBtn->setText(tr("Start"));
+    emu->deleteLater();
+    emu = nullptr;
+}
+
+void MainWindow::on_actionSave_Memory_Image_triggered()
+{
+    QString path = QFileDialog::getSaveFileName(this, tr("Save Memory Image"), QString(), tr("Memory Image (*mif)"));
+    if(path.isEmpty())
+        return;
+
+    QFile f(path);
+    if(!f.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::critical(this, tr("Error Saving Memory Image"), tr("Could not open the file for writing"), QMessageBox::Ok);
+        return;
+    }
+
+    int line = MifSerializer::VectorToMif(f, pgmmem);
+    if(line)
+        QMessageBox::critical(this, tr("Error Saving Memory Image"), tr("An error occured while writing memory address %1 to file"), QMessageBox::Ok);
 }

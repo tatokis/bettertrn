@@ -43,7 +43,7 @@ public:
         SAXL,
         SAXR = SAXL,
         INP,
-        OUTP = INP,
+        OUT = INP,
         RET,
         HLT,
     } TrnOpcode;

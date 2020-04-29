@@ -29,14 +29,17 @@ SOURCES += \
         mainwindow.cpp \
     aboutwindow.cpp \
     trnemu.cpp \
-    asmparser.cpp
+    asmparser.cpp \
+    mifserializer.cpp
 
 HEADERS += \
         mainwindow.h \
     aboutwindow.h \
     trnemu.h \
     trnopcodes.h \
-    asmparser.h
+    asmparser.h \
+    asmlabelarg.h \
+    mifserializer.h
 
 FORMS += \
         mainwindow.ui \

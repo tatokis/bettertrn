@@ -28,6 +28,10 @@ private slots:
     void fileChangedOnDisk(QString file);
     void on_startStopBtn_clicked();
 
+    void emuThreadStopped();
+
+    void on_actionSave_Memory_Image_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemWatcher fswatcher;

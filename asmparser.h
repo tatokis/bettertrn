@@ -10,9 +10,11 @@ class AsmParser
 public:
     static int Parse(QFile& infile, QVector<quint32>& outvec);
 private:
-    static qint8 StrToOpcode(QString cmd);
+    static qint8 StrToOpcode(const QString& cmd);
     static QHash<QString, TrnOpcodes::TrnOpcode> opmap;
-    static bool OpcodeHasArgs(qint8 op);
+    static QHash<QString, quint16> opargmap;
+    static bool MnemonicHasArgs(const qint8& op);
+    static quint16 MnemonicToOpcodeArg(const QString& mn);
 };
 
 #endif // PARSEASM_H

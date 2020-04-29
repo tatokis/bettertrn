@@ -641,6 +641,12 @@
             <attribute name="verticalHeaderVisible">
              <bool>false</bool>
             </attribute>
+            <attribute name="verticalHeaderMinimumSectionSize">
+             <number>20</number>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>20</number>
+            </attribute>
             <attribute name="verticalHeaderStretchLastSection">
              <bool>false</bool>
             </attribute>
@@ -715,6 +721,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave_Memory_Image"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -767,6 +774,11 @@
   <action name="actionSpeed">
    <property name="text">
     <string>Speed</string>
+   </property>
+  </action>
+  <action name="actionSave_Memory_Image">
+   <property name="text">
+    <string>Save Memory Image</string>
    </property>
   </action>
  </widget>
