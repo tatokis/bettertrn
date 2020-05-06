@@ -14,6 +14,7 @@
 #include "tablewidgetitemanimator.h"
 #include "qoverloadlegacy.h"
 #include <QScrollBar>
+#include <QToolButton>
 
 #define MEM_STR_FORMAT(a, b, ai, di)    QTableWidgetItem* a = new QTableWidgetItem(QString::number(ai)); \
                                         QTableWidgetItem* b = new QTableWidgetItem(QString("%1").arg(di, 20, 2, QChar('0')))
@@ -40,6 +41,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Focus the start button by default
     ui->startStopBtn->setFocus();
+
+    // Enable the clear button despite the LineEdit being read only
+    QToolButton* tbtn = ui->outputLineEdit->findChild<QToolButton*>();
+    if(tbtn)
+        tbtn->setEnabled(true);
 }
 
 MainWindow::~MainWindow()

@@ -317,6 +317,37 @@ void TrnEmu::run()
                         emit registerUpdated(Register::BR, OperationType::Read, regBR);
                         break;
 
+                    // More stuff here
+                    case TrnOpcodes::SHAL:
+                        switch(regIR & 0b11)
+                        {
+                        case 0b00:
+                            EMIT_LOG(tr("Left shift register A"), "SHAL");
+                            regA <<= 1;
+                            emit registerUpdated(Register::A, OperationType::InPlace, regA);
+                            EMIT_LOG(tr("A << 1"), QString::number(regA));
+                            break;
+                        case 0b01:
+                            EMIT_LOG(tr("Right shift register A"), "SHAR");
+                            regA >>= 1;
+                            EMIT_LOG(tr("A >> 1"), QString::number(regA));
+                            emit registerUpdated(Register::A, OperationType::InPlace, regA);
+                            break;
+                        case 0b10:
+                            EMIT_LOG(tr("Left shift register X"), "SHXL");
+                            regX <<= 1;
+                            EMIT_LOG(tr("X << 1"), QString::number(regX));
+                            emit registerUpdated(Register::X, OperationType::InPlace, regX);
+                            break;
+                        case 0b11:
+                            EMIT_LOG(tr("Right shift register X"), "SHXR");
+                            regX >>= 1;
+                            EMIT_LOG(tr("X >> 1"), QString::number(regX));
+                            emit registerUpdated(Register::X, OperationType::InPlace, regX);
+                            break;
+                        }
+                        break;
+
                     // FIXME: literally everything after DCI and before SAXL
                     // FIXME: Test SAXL/SAXR properly
                     case TrnOpcodes::SAXL:
