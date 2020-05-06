@@ -34,7 +34,7 @@
            <number>16</number>
           </property>
           <item row="1" column="3">
-           <widget class="QLabel" name="regX">
+           <widget class="AnimatedLabel" name="regX">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -48,6 +48,9 @@
             </property>
             <property name="text">
              <string notr="true">00000000000000000000</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -92,7 +95,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="regBR">
+           <widget class="AnimatedLabel" name="regBR">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -107,6 +110,9 @@
             <property name="text">
              <string notr="true">00000000000000000000</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="9" column="2">
@@ -120,7 +126,7 @@
            </widget>
           </item>
           <item row="8" column="3">
-           <widget class="QLabel" name="label_15">
+           <widget class="AnimatedLabel" name="regS">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -134,11 +140,14 @@
             </property>
             <property name="text">
              <string notr="true">0</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
           <item row="8" column="1">
-           <widget class="QLabel" name="label_13">
+           <widget class="AnimatedLabel" name="regF2">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -152,6 +161,9 @@
             </property>
             <property name="text">
              <string notr="true">0</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -186,7 +198,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="regSP">
+           <widget class="AnimatedLabel" name="regSP">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -200,6 +212,9 @@
             </property>
             <property name="text">
              <string notr="true">0000000000000</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -214,7 +229,7 @@
            </widget>
           </item>
           <item row="5" column="3">
-           <widget class="QLabel" name="clockValue">
+           <widget class="AnimatedLabel" name="clockValue">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -229,10 +244,13 @@
             <property name="text">
              <string notr="true">0000000</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="2" column="3">
-           <widget class="QLabel" name="regI">
+           <widget class="AnimatedLabel" name="regI">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -247,10 +265,13 @@
             <property name="text">
              <string notr="true">0000000000000</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="9" column="3">
-           <widget class="QLabel" name="label_16">
+           <widget class="AnimatedLabel" name="regH">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -265,10 +286,13 @@
             <property name="text">
              <string notr="true">0</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="0" column="3">
-           <widget class="QLabel" name="regA">
+           <widget class="AnimatedLabel" name="regA">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -283,10 +307,13 @@
             <property name="text">
              <string notr="true">00000000000000000000</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="7" column="3">
-           <widget class="QLabel" name="label_8">
+           <widget class="AnimatedLabel" name="regZ">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -301,10 +328,13 @@
             <property name="text">
              <string notr="true">0</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QLabel" name="regSC">
+           <widget class="AnimatedLabel" name="regSC">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -319,10 +349,13 @@
             <property name="text">
              <string notr="true">00</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="9" column="1">
-           <widget class="QLabel" name="label_14">
+           <widget class="AnimatedLabel" name="regV">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -336,6 +369,9 @@
             </property>
             <property name="text">
              <string notr="true">0</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -370,7 +406,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLabel" name="regAR">
+           <widget class="AnimatedLabel" name="regAR">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -383,7 +419,10 @@
              <enum>QFrame::Raised</enum>
             </property>
             <property name="text">
-             <string notr="true">00000000000000000000</string>
+             <string notr="true">0000000000000</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -401,7 +440,7 @@
            </spacer>
           </item>
           <item row="3" column="3">
-           <widget class="QLabel" name="regPC">
+           <widget class="AnimatedLabel" name="regPC">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -416,10 +455,13 @@
             <property name="text">
              <string notr="true">0000000000000</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QLabel" name="regIR">
+           <widget class="AnimatedLabel" name="regIR">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -434,6 +476,9 @@
             <property name="text">
              <string notr="true">00000000000000000000</string>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
           <item row="2" column="2">
@@ -447,7 +492,7 @@
            </widget>
           </item>
           <item row="7" column="1">
-           <widget class="QLabel" name="label_5">
+           <widget class="AnimatedLabel" name="regF1">
             <property name="font">
              <font>
               <family>Monospace</family>
@@ -461,6 +506,9 @@
             </property>
             <property name="text">
              <string notr="true">0</string>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -525,8 +573,11 @@
         <item>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit_2">
+           <widget class="QLineEdit" name="outputLineEdit">
             <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="clearButtonEnabled">
              <bool>true</bool>
             </property>
            </widget>
@@ -542,12 +593,15 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="lineEdit">
+           <widget class="QLineEdit" name="inputLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="readOnly">
              <bool>false</bool>
             </property>
             <property name="placeholderText">
-             <string>Press Enter after entering data</string>
+             <string>Type a number with a base prefix (0b, 0x) and press enter</string>
             </property>
            </widget>
           </item>
@@ -568,10 +622,16 @@
           <item>
            <widget class="QPushButton" name="startStopBtn">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Start</string>
+            </property>
+            <property name="autoDefault">
+             <bool>true</bool>
+            </property>
+            <property name="default">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -586,7 +646,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="stepBtn">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -630,10 +690,10 @@
              <bool>false</bool>
             </property>
             <attribute name="horizontalHeaderMinimumSectionSize">
-             <number>60</number>
+             <number>30</number>
             </attribute>
             <attribute name="horizontalHeaderDefaultSectionSize">
-             <number>70</number>
+             <number>30</number>
             </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>
@@ -650,6 +710,14 @@
             <attribute name="verticalHeaderStretchLastSection">
              <bool>false</bool>
             </attribute>
+            <column>
+             <property name="text">
+              <string>PC</string>
+             </property>
+             <property name="textAlignment">
+              <set>AlignCenter</set>
+             </property>
+            </column>
             <column>
              <property name="text">
               <string>Address</string>
@@ -677,7 +745,47 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="logTable"/>
+           <widget class="QTableWidget" name="logTable">
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <attribute name="horizontalHeaderMinimumSectionSize">
+             <number>60</number>
+            </attribute>
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>60</number>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderMinimumSectionSize">
+             <number>20</number>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>20</number>
+            </attribute>
+            <attribute name="verticalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>Clock</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Action</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Value</string>
+             </property>
+            </column>
+           </widget>
           </item>
          </layout>
         </item>
@@ -740,6 +848,7 @@
      <string>Preferences</string>
     </property>
     <addaction name="actionSpeed"/>
+    <addaction name="actionLog_internal_CPU_Execution"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPreferences"/>
@@ -773,7 +882,7 @@
   </action>
   <action name="actionSpeed">
    <property name="text">
-    <string>Speed</string>
+    <string>Execution speed</string>
    </property>
   </action>
   <action name="actionSave_Memory_Image">
@@ -781,8 +890,26 @@
     <string>Save Memory Image</string>
    </property>
   </action>
+  <action name="actionLog_internal_CPU_Execution">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Log internal CPU Execution</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>AnimatedLabel</class>
+   <extends>QLabel</extends>
+   <header>animatedlabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
