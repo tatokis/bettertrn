@@ -20,7 +20,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this))
+    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0)
 {
     ui->setupUi(this);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close, Qt::QueuedConnection);
@@ -144,6 +144,18 @@ int MainWindow::loadNewFile(QString file)
         ui->memoryTable->setItem(i, 1, addr);
         ui->memoryTable->setItem(i, 2, memcontent);
     }
+
+    // Set the PC arrow to the first item
+    QTableWidgetItem* arrow = new QTableWidgetItem("→");
+    // Get the existing font and enlarge it
+    QFont arrowfont = arrow->font();
+    arrowfont.setPointSize(arrowfont.pointSize() + 8);
+    // Set the new font to the item and add it to the table
+    arrow->setFont(arrowfont);
+    // Align centre
+    arrow->setTextAlignment(Qt::AlignCenter);
+    ui->memoryTable->setItem(0, 0, arrow);
+    pcarrowpos = 0;
 
     return 0;
 }
@@ -287,9 +299,9 @@ void MainWindow::memoryUpdate(int addr, quint32 data, TrnEmu::OperationType t)
     const QColor& c = (addr % 2 ? p.alternateBase().color() : p.base().color());
     // In place memory updates are not supported
     if(t == TrnEmu::OperationType::Read)
-        animator->startReadAnimation(a, d, c);
+        animator->startReadAnimation(a, d, ui->memoryTable->item(addr, 0), c);
     else
-        animator->startWriteAnimation(a, d, c);
+        animator->startWriteAnimation(a, d, ui->memoryTable->item(addr, 0), c);
 }
 
 #define REG_CASE(r)  case TrnEmu::Register::r: \
@@ -336,8 +348,21 @@ void MainWindow::registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, qui
         REG_CASE(AR);
         // Handle PC manually to set the arrow in the table
         case TrnEmu::Register::PC:
+        {
             l = ui->regPC;
+            // We can't take the existing item because that will cause the animation to continue on the next line
+            // Instead, we copy it (manually) and then clear the original
+            QTableWidgetItem* oldarrow = ui->memoryTable->item(pcarrowpos, 0);
+            QTableWidgetItem* arrow = new QTableWidgetItem(oldarrow->text());
+            oldarrow->setText("");
+            arrow->setFont(oldarrow->font());
+            arrow->setTextAlignment(oldarrow->textAlignment());
+            // Set it to the new PC position
+            ui->memoryTable->setItem(val, 0, arrow);
+            // Update the "pointer"
+            pcarrowpos = val;
             break;
+        }
         REG_CASE(I);
         REG_CASE(SP);
         default:

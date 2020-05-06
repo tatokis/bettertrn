@@ -49,6 +49,7 @@ private:
     void closeEvent(QCloseEvent* e);
     TableWidgetItemAnimator* animator;
     inline void resetGUI();
+    int pcarrowpos;
 };
 
 #endif // MAINWINDOW_H

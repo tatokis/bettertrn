@@ -714,9 +714,6 @@
              <property name="text">
               <string>PC</string>
              </property>
-             <property name="textAlignment">
-              <set>AlignCenter</set>
-             </property>
             </column>
             <column>
              <property name="text">
