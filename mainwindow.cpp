@@ -258,6 +258,7 @@ void MainWindow::on_startStopBtn_clicked()
 void MainWindow::emuThreadStopped()
 {
     ui->startStopBtn->setText(tr("Start"));
+    ui->pauseBtn->setText(tr("Pause"));
     ui->startStopBtn->setEnabled(true);
     ui->pauseBtn->setEnabled(false);
     ui->stepBtn->setEnabled(false);
