@@ -221,6 +221,7 @@ void MainWindow::on_startStopBtn_clicked()
     connect(emu, &TrnEmu::requestInput, this, [this]() {
         ui->inputLineEdit->setEnabled(true);
         ui->inputLineEdit->setFocus();
+        ui->statusBar->showMessage(tr("Waiting for user input"));
     });
 
     // Data signals
@@ -517,4 +518,5 @@ void MainWindow::on_inputLineEdit_editingFinished()
     ui->inputLineEdit->setEnabled(false);
 
     emu->setInput(parsed);
+    ui->statusBar->clearMessage();
 }
