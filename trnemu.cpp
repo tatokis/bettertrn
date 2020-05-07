@@ -92,7 +92,7 @@ static const QString clockpulse = QObject::tr("Clock pulse");
 
 TrnEmu::TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, QObject* parent) :
     QThread(parent), _memory(pgm), _isProcessing(new QMutex()), _sleepInterval(sleepInterval), _cond(new QWaitCondition()),
-    _inputCond(new QWaitCondition()), _shouldPause(false)
+    _inputCond(new QWaitCondition()), _shouldPause(false), _paused(false)
 {
     reset();
 }
