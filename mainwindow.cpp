@@ -133,13 +133,19 @@ int MainWindow::loadNewFile(QString file)
     pgmmem.clear();
     // Call the correct function for asm or mif
     // FIXME: Maybe in the future use content autodetect instead of the file extension
-    int line = (file.toLower().endsWith(".asm") ? AsmParser::Parse(f, pgmmem) : MifSerializer::MifToVector(f, pgmmem));
+    QString err;
+    int line = (file.toLower().endsWith(".asm") ? AsmParser::Parse(f, pgmmem, err) : MifSerializer::MifToVector(f, pgmmem, err));
+
     if(line)
     {
-        QMessageBox::critical(this, tr("Parse error"), tr("Parse error in line %1").arg(QString::number(line)), QMessageBox::Ok);
+        QString msgarg;
+        if(line > 0)
+            msgarg = " in line " + QString::number(line);
+        QMessageBox::critical(this, tr("Parse error"), tr("Parse error%1\n%2").arg(msgarg, err), QMessageBox::Ok);
+        // Clear the memory vector, otherwise it's possible to start executing
+        pgmmem.clear();
         return 1;
     }
-    //qDebug() << pgmmem;
 
     // Clear tables
     ui->logTable->setRowCount(0);

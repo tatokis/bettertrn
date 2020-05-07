@@ -1,6 +1,6 @@
 #include "mifserializer.h"
 
-int MifSerializer::MifToVector(QFile& f, QVector<quint32>& vec)
+int MifSerializer::MifToVector(QFile& f, QVector<quint32>& vec, QString& errstr)
 {
     QByteArray ba = f.readLine();
     int lnum = 0;
@@ -12,16 +12,25 @@ int MifSerializer::MifToVector(QFile& f, QVector<quint32>& vec)
         QVector<QStringRef> split = line.splitRef(QChar('\t'));
 
         if(split.length() != 2)
+        {
+            errstr = QObject::tr("More than two columns detected in input file");
             return lnum;
+        }
 
         bool ok;
         int currentmempos = (int)split.at(0).toUShort(&ok, 2);
         if(!ok)
+        {
+            errstr = QObject::tr("Could not parse memory address as a number");
             return lnum;
+        }
 
         unsigned long val = split.at(1).toULong(&ok, 2);
         if(!ok)
+        {
+            errstr = QObject::tr("Could not parse memory data as a number");
             return lnum;
+        }
 
         // Because they used a hashmap originally, we need to check if we need to expand the vector
         // as the addresses might skip, and then insert the line

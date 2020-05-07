@@ -8,7 +8,7 @@
 class AsmParser
 {
 public:
-    static int Parse(QFile& infile, QVector<quint32>& outvec);
+    static int Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr);
 private:
     static qint8 StrToOpcode(const QString& cmd);
     static QHash<QString, TrnOpcodes::TrnOpcode> opmap;

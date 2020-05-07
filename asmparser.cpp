@@ -14,7 +14,7 @@
 QHash<QString, TrnOpcodes::TrnOpcode> AsmParser::opmap;
 QHash<QString, quint16> AsmParser::opargmap;
 
-int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
+int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
 {
     QHash<QString, int> symboltable;
     QVector<AsmLabelArg> secondpasslabels;
@@ -28,6 +28,8 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
     // Famous last words!
     QRegularExpression regex("^([A-Z\\d]+:)?[ \t]*([A-Z,]+)[ \t]*(.+)?$", QRegularExpression::MultilineOption);
     int currentmempos = 0;
+    QString curprogname;
+
     while(ba.length())
     {
         lnum++;
@@ -61,7 +63,14 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
 
         if(insn.isEmpty())
         {
-            qDebug() << "Syntax Error: no insn in line" << lnum;
+            errstr = QObject::tr("No instruction found");
+            return lnum;
+        }
+
+        // Error out if the program starts without NAM
+        if(insn != "NAM" && curprogname.isEmpty())
+        {
+            errstr = QObject::tr("Program doesn't start with NAM");
             return lnum;
         }
 
@@ -81,12 +90,12 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
 
         // Split arguments on comma
         // All of this is fine even if no arguments exist
-        // FIXME: remove comments
         QVector<QStringRef> arglist = args.splitRef(QChar(','));
         QVector<quint16> arglistint;
         bool argsok = true;
         // FIXME: Make this look nicer
-        if(arglist.length() > 0 && !arglist.at(0).isEmpty())
+        // Ignore arguments to NAM
+        if(arglist.length() > 0 && !arglist.at(0).isEmpty() && insn != "NAM")
         {
             foreach(const QStringRef& _arg, arglist)
             {
@@ -94,7 +103,6 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
                 bool hex = (args.startsWith(QChar('$')));
                 if(hex)
                     arg = arg.mid(1);
-                // FIXME: do dereferencing here
                 // short is guaranteed to be at least 16 bits
                 bool curargok;
                 arglistint.append(arg.toUShort(&curargok, (hex ? 16 : 10)));
@@ -103,7 +111,7 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
                 if(curargok)
                     continue;
 
-                // TODO: maybe refator this
+                // TODO: maybe refactor this
                 if(arglist.count() == 1)
                 {
                     bool startswithnum = false;
@@ -135,7 +143,10 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
 
                             // We need to check if it doesn't start with a number though
                             if(plusref.at(0).isDigit())
+                            {
+                                errstr = QObject::tr("Labels must not start with a number");
                                 return lnum;
+                            }
 
                             labels.append(plusref.toString());
                         }
@@ -180,7 +191,10 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
             if(MnemonicHasArgs(op))
             {
                 if(arglistint.count() != 1 || !argsok)
+                {
+                    errstr = QObject::tr("Invalid instruction argument");
                     return lnum;
+                }
 
                 opargs = arglistint.at(0);
             }
@@ -218,7 +232,10 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
             {
                 // Reserve memory
                 if(arglistint.count() != 1)
+                {
+                    errstr = QObject::tr("Invalid argument specified");
                     return lnum;
+                }
 
                 // FIXME: is this enough?
                 if(outvec.size() < currentmempos + arglistint.count())
@@ -231,27 +248,52 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
             else if(insn == "ORG")
             {
                 if(arglistint.count() != 1)
+                {
+                    errstr = QObject::tr("Invalid argument specified");
                     return lnum;
+                }
                 currentmempos = arglistint[0];
             }
             else if(insn == "NAM")
             {
-
+                if(args.isEmpty())
+                {
+                    errstr = QObject::tr("No program name specified");
+                    return lnum;
+                }
+                // If the current program name is not empty, then there was no END from the last program
+                if(!curprogname.isEmpty())
+                {
+                    errstr = QObject::tr("Found NAM but previous program had no END");
+                    return lnum;
+                }
+                curprogname = args;
             }
+            else if(insn == "END")
+            {
+                curprogname = "";
+            }
+            // The original TRN doesn't seem to implement EXT, and ENT doesn't seem to do anything
+            // So we'll ignore them
+            else if(insn == "ENT" || insn == "EXT") {}
             else
             {
-                qDebug() << "Unknown insn";
-                //return lnum;
+                errstr = QObject::tr("Unknown instruction %1").arg(insn);
+                return lnum;
             }
-            // Check for pseudoinsn here
-            // NAM, CON, RES, ORG, ENT, END
-            // EXT too?
         }
 
         if(!args.isEmpty())
             qDebug() << "Args" << args;
 
         ba = infile.readLine();
+    }
+
+    // If the current program name is not empty, then there was no END
+    if(!curprogname.isEmpty())
+    {
+        errstr = QObject::tr("No END found at end of program");
+        return lnum;
     }
 
     qDebug() << "Second parsing pass" << symboltable;
@@ -271,8 +313,8 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec)
         {
             if(!symboltable.contains(lbl))
             {
-                qDebug() << "invalid symbol" << lbl;
-                //return -1;
+                errstr = QObject::tr("Label %1 not defined").arg(lbl);
+                return -1;
             }
 
             finalres += symboltable[lbl];

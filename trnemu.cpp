@@ -5,7 +5,7 @@
 #include "trnopcodes.h"
 
 // Format strings used for logging
-static const QString outofbounds = QObject::tr("Attempted to access memory out of bounds at index %1");
+static const QString outofbounds = QObject::tr("Attempted to access memory out of bounds at index %1.");
 static const QString regincr = QObject::tr("Register %1++");
 static const QString regdecr = QObject::tr("Register %1--");
 static const QString regzero = QObject::tr("Register %1 = 0");
