@@ -178,11 +178,14 @@ void MainWindow::on_startStopBtn_clicked()
 {
     if(emu)
     {
+        ui->statusBar->showMessage(tr("Stopping emulator"));
         emu->requestInterruption();
         ui->startStopBtn->setEnabled(false);
         ui->pauseBtn->setEnabled(false);
         ui->stepBtn->setEnabled(false);
         resumeEmuIfRunning();
+        // Send bogus input to resume execution if waiting for input but the user wants to quit
+        emu->setInput(0);
         return;
     }
 
@@ -264,6 +267,7 @@ void MainWindow::emuThreadStopped()
     ui->stepBtn->setEnabled(false);
     emu->deleteLater();
     emu = nullptr;
+    ui->statusBar->showMessage(tr("Emulation finished"));
 }
 
 void MainWindow::on_actionSave_Memory_Image_triggered()
@@ -449,6 +453,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
     }
     emu->requestInterruption();
     resumeEmuIfRunning();
+    emu->setInput(0);
     emu->wait();
     // The destructor will delete emu
     e->accept();
