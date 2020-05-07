@@ -21,7 +21,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0)
+    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0), _pcarrow(nullptr)
 {
     ui->setupUi(this);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close, Qt::QueuedConnection);
@@ -52,6 +52,8 @@ MainWindow::~MainWindow()
 {
     if(emu)
         delete emu;
+    if(_pcarrow)
+        delete _pcarrow;
     delete animator;
     delete ui;
 }
@@ -235,6 +237,14 @@ void MainWindow::on_startStopBtn_clicked()
 
     resetGUI();
 
+    // If we have an arrow item stored, set it to position 0
+    if(_pcarrow)
+    {
+        // Table takes ownership of the item
+        ui->memoryTable->setItem(0, 0, _pcarrow);
+        _pcarrow = nullptr;
+    }
+
     emu->start();
 }
 
@@ -363,6 +373,14 @@ void MainWindow::registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, qui
             oldarrow->setText("");
             arrow->setFont(oldarrow->font());
             arrow->setTextAlignment(oldarrow->textAlignment());
+            // If the new position is outside the table, store the new arrow
+            // We need to do that in case the user restarts without reloading
+            if(val > ui->memoryTable->rowCount() - 1)
+            {
+                _pcarrow = arrow;
+                pcarrowpos = 0;
+                break;
+            }
             // Set it to the new PC position
             ui->memoryTable->setItem(val, 0, arrow);
             // Update the "pointer"
@@ -491,7 +509,7 @@ void MainWindow::on_inputLineEdit_editingFinished()
     if(!ok)
     {
         ui->inputLineEdit->clear();
-        QMessageBox::warning(this, tr("Invalid number entered"), tr("The number you entered is not valid.\nSome valid values are 0x10, 0b010101, 42, 0o7\nNumbers larger than 20 bits will be truncated."), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Invalid number entered"), tr("The number you entered is not valid.\nSome valid values are 42, 0x2A, 0b101010, 0o52\nNumbers longer than 20 bits will be truncated."), QMessageBox::Ok);
         return;
     }
 

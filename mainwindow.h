@@ -50,6 +50,7 @@ private:
     TableWidgetItemAnimator* animator;
     inline void resetGUI();
     int pcarrowpos;
+    QTableWidgetItem* _pcarrow;
 };
 
 #endif // MAINWINDOW_H

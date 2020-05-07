@@ -11,6 +11,7 @@ static const QString regdecr = QObject::tr("Register %1--");
 static const QString regzero = QObject::tr("Register %1 = 0");
 static const QString regassign = QObject::tr("%1 ← %2");
 static const QString regassignmask = QObject::tr("%1 ← (%2 & %3)");
+static const QString regassignormask = QObject::tr("%1 ← %1 | (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
 
 #define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
@@ -28,8 +29,15 @@ static const QString clockpulse = QObject::tr("Clock pulse");
                                         emit registerUpdated(Register::src, OperationType::Read, reg##src); \
                                         emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
-//#define REG_LOAD_MASK_OR
+#define REG_LOAD_OR_MASK(dst, src, mask)    reg##dst |= reg##src & mask; \
+                                            EMIT_LOG(regassignormask.arg(regToString[Register::dst], regToString[Register::src], \
+                                              QString("0b%1").arg(mask, 13, 2, QChar('0'))), \
+                                              QString::number(reg##dst)\
+                                            ); \
+                                            emit registerUpdated(Register::src, OperationType::Read, reg##src); \
+                                            emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
+// FIXME: Add log messages for the macros below
 #define REG_LOAD_DEREF(dst, src)    if((unsigned int)_memory.length() <= reg##src) \
                                     { \
                                         emit executionError(outofbounds.arg(reg##src)); \
@@ -395,6 +403,17 @@ void TrnEmu::run()
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         break;
 
+                    case TrnOpcodes::JSR:
+#warning "STUB"
+                        break;
+
+                    case TrnOpcodes::JIG:
+                        EMIT_LOG(tr("Jump to address if I is greater than zero"), "JPO");
+                        // Check if the first 10 bits are greater than 0, and then make sure the 20th bit is 0
+                        if((regI & 0b01111111111111111111) > 0 && (regI & 0b10000000000000000000) == 0)
+                            REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        break;
+
                     // More stuff here
                     case TrnOpcodes::SHAL:
                         switch(regIR & 0b11)
@@ -427,7 +446,7 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::SSP:
-                        //DOMOVE
+                        REG_LOAD_OR_MASK(BR, SP, 0b1111111111111);
                         PHASE_END();
 
                         CLOCK_TICK();
@@ -514,7 +533,6 @@ void TrnEmu::run()
                         EMIT_LOG(tr("Halt"), "HLT");
                         emit registerUpdated(Register::H, OperationType::InPlace, (quint8)1);
                         return;
-
 
                     default:
                         // FIXME: Add error string
