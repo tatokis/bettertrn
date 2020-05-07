@@ -5,12 +5,12 @@
 #include "trnopcodes.h"
 
 // Format strings used for logging
-//static const QString ;
 static const QString outofbounds = QObject::tr("Attempted to access memory out of bounds at index %1");
 static const QString regincr = QObject::tr("Register %1++");
 static const QString regdecr = QObject::tr("Register %1--");
 static const QString regzero = QObject::tr("Register %1 = 0");
 static const QString regassign = QObject::tr("%1 ← %2");
+static const QString regassignmask = QObject::tr("%1 ← (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
 
 #define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
@@ -21,8 +21,14 @@ static const QString clockpulse = QObject::tr("Clock pulse");
                             emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
 #define REG_LOAD_MASK(dst, src, mask)   reg##dst = reg##src & mask; \
+                                        EMIT_LOG(regassignmask.arg(regToString[Register::dst], regToString[Register::src], \
+                                            QString("0b%1").arg(mask, 13, 2, QChar('0'))), \
+                                            QString::number(reg##dst)\
+                                        ); \
                                         emit registerUpdated(Register::src, OperationType::Read, reg##src); \
                                         emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
+
+//#define REG_LOAD_MASK_OR
 
 #define REG_LOAD_DEREF(dst, src)    if((unsigned int)_memory.length() <= reg##src) \
                                     { \
@@ -317,6 +323,78 @@ void TrnEmu::run()
                         emit registerUpdated(Register::BR, OperationType::Read, regBR);
                         break;
 
+                    case TrnOpcodes::AND:
+                        EMIT_LOG(tr("AND registers A and BR"), "AND");
+                        DO_READ();
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        regA &= regBR;
+                        EMIT_LOG("A = A & BR", QString::number(regA));
+                        emit registerUpdated(Register::A, OperationType::InPlace, regA);
+                        emit registerUpdated(Register::BR, OperationType::Read, regBR);
+                        break;
+
+                    case TrnOpcodes::ORA:
+                        EMIT_LOG(tr("OR registers A and BR"), "ORA");
+                        DO_READ();
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        regA |= regBR;
+                        EMIT_LOG("A = A | BR", QString::number(regA));
+                        emit registerUpdated(Register::A, OperationType::InPlace, regA);
+                        emit registerUpdated(Register::BR, OperationType::Read, regBR);
+                        break;
+
+                    case TrnOpcodes::XOR:
+                        EMIT_LOG(tr("XOR registers A and BR"), "XOR");
+                        DO_READ();
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        regA ^= regBR;
+                        EMIT_LOG("A = A ^ BR", QString::number(regA));
+                        emit registerUpdated(Register::A, OperationType::InPlace, regA);
+                        emit registerUpdated(Register::BR, OperationType::Read, regBR);
+                        break;
+
+                    case TrnOpcodes::CMA:
+                        EMIT_LOG(tr("Calculate register A's complement"), "CMA");
+                        regA = ~regA;
+                        EMIT_LOG("A = ~A", QString::number(regA));
+                        emit registerUpdated(Register::A, OperationType::InPlace, regA);
+                        break;
+
+                    case TrnOpcodes::JMP:
+                        EMIT_LOG(tr("Jump to address"), "JMP");
+                        REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        break;
+
+                    case TrnOpcodes::JPN:
+                        EMIT_LOG(tr("Jump to address if A is negative"), "JPN");
+                        if(regS & 0b1)
+                            REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        break;
+
+                    case TrnOpcodes::JAG:
+                        EMIT_LOG(tr("Jump to address if A is greater than zero"), "JAG");
+                        if(!(regS & 0b1) && !(regZ & 0b1)) // FIXME: optimize
+                            REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        break;
+
+                    case TrnOpcodes::JPZ:
+                        EMIT_LOG(tr("Jump to address if A is zero"), "JPZ");
+                        if(regZ & 0b1)
+                            REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        break;
+
+                    case TrnOpcodes::JPO:
+                        EMIT_LOG(tr("Jump to address if overflow"), "JPO");
+                        if(regV & 0b1)
+                            REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        break;
+
                     // More stuff here
                     case TrnOpcodes::SHAL:
                         switch(regIR & 0b11)
@@ -348,7 +426,14 @@ void TrnEmu::run()
                         }
                         break;
 
-                    // FIXME: literally everything after DCI and before SAXL
+                    case TrnOpcodes::SSP:
+                        //DOMOVE
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        DO_WRITE();
+                        break;
+
                     // FIXME: Test SAXL/SAXR properly
                     case TrnOpcodes::SAXL:
                     {
@@ -406,11 +491,30 @@ void TrnEmu::run()
                         }
                         break;
 
+                    case TrnOpcodes::RET:
+                        REG_LOAD(AR, SP);
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        DO_READ();
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                        REG_DECR(SP);
+#warning "This is the only instruction that resets regF before the final phase. Find a workaround to not emit the signal"
+                        REG_ZERO(F);
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        break;
+
                     case TrnOpcodes::HLT:
                         regH = 1;
                         EMIT_LOG(tr("Halt"), "HLT");
                         emit registerUpdated(Register::H, OperationType::InPlace, (quint8)1);
                         return;
+
 
                     default:
                         // FIXME: Add error string
