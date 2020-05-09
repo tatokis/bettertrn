@@ -13,6 +13,8 @@ static const QString regassign = QObject::tr("%1 ← %2");
 static const QString regassignmask = QObject::tr("%1 ← (%2 & %3)");
 static const QString regassignormask = QObject::tr("%1 ← %1 | (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
+static const QString regldderef = QObject::tr("%1 ← [%2]");
+static const QString regstderef = QObject::tr("[%1] ← %2");
 
 #define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
 
@@ -37,13 +39,13 @@ static const QString clockpulse = QObject::tr("Clock pulse");
                                             emit registerUpdated(Register::src, OperationType::Read, reg##src); \
                                             emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
-// FIXME: Add log messages for the macros below
 #define REG_LOAD_DEREF(dst, src)    if((unsigned int)_memory.length() <= reg##src) \
                                     { \
                                         emit executionError(outofbounds.arg(reg##src)); \
                                         return; \
                                     } \
                                     reg##dst = _memory.at(reg##src); \
+                                    EMIT_LOG(regldderef.arg(regToString[Register::dst], regToString[Register::src]), QString::number(reg##dst));\
                                     emit memoryUpdated(reg##src, reg##dst, OperationType::Read)
 
 #define REG_STORE_DEREF(dst, src)   if((unsigned int)_memory.length() <= reg##dst) \
@@ -52,6 +54,7 @@ static const QString clockpulse = QObject::tr("Clock pulse");
                                         return; \
                                     } \
                                     _memory[reg##dst] = reg##src; \
+                                    EMIT_LOG(regstderef.arg(regToString[Register::dst], regToString[Register::src]), QString::number(reg##dst));\
                                     emit memoryUpdated(reg##dst, reg##src, OperationType::Write)
 
 // FIXME: check if the Z S V registers need to be updated here in the ui(?), as the macro is used in an internal action as well
