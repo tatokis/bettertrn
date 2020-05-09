@@ -9,12 +9,12 @@ static const QString outofbounds = QObject::tr("Attempted to access memory out o
 static const QString regincr = QObject::tr("Register %1++");
 static const QString regdecr = QObject::tr("Register %1--");
 static const QString regzero = QObject::tr("Register %1 = 0");
-static const QString regassign = QObject::tr("%1 ← %2");
-static const QString regassignmask = QObject::tr("%1 ← (%2 & %3)");
-static const QString regassignormask = QObject::tr("%1 ← %1 | (%2 & %3)");
+static const QString regassign("%1 ← %2");
+static const QString regassignmask("%1 ← (%2 & %3)");
+static const QString regassignormask("%1 ← %1 | (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
-static const QString regldderef = QObject::tr("%1 ← [%2]");
-static const QString regstderef = QObject::tr("[%1] ← %2");
+static const QString regldderef("%1 ← [%2]");
+static const QString regstderef("[%1] ← %2");
 
 #define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
 
@@ -535,12 +535,13 @@ void TrnEmu::run()
                         CLOCK_TICK();
                         REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         REG_DECR(SP);
-#warning "This is the only instruction that resets regF before the final phase. Find a workaround to not emit the signal"
                         REG_ZERO(F);
                         PHASE_END();
 
                         CLOCK_TICK();
-                        break;
+                        // Manually zero out SC here and go back to the start of the loop due to how this instruction has to be implemented
+                        REG_ZERO(SC);
+                        continue;
 
                     case TrnOpcodes::HLT:
                         regH = 1;
