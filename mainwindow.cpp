@@ -189,6 +189,7 @@ void MainWindow::on_startStopBtn_clicked()
         return;
     }
 
+    ui->statusBar->clearMessage();
     ui->outputLineEdit->clear();
 
     // If there's nothing loaded in memory, ask the user to open a file

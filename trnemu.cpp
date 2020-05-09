@@ -51,8 +51,8 @@ static const QString clockpulse = QObject::tr("Clock pulse");
                                         emit executionError(outofbounds.arg(reg##src)); \
                                         return; \
                                     } \
-                                    _memory[reg##src] = reg##dst; \
-                                    emit memoryUpdated(reg##src, reg##dst, OperationType::Write)
+                                    _memory[reg##dst] = reg##src; \
+                                    emit memoryUpdated(reg##dst, reg##src, OperationType::Write)
 
 // FIXME: check if the Z S V registers need to be updated here in the ui(?), as the macro is used in an internal action as well
 #define REG_INCR(dst)   reg##dst++; \
@@ -404,7 +404,18 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::JSR:
-#warning "STUB"
+                        EMIT_LOG(tr("Jump to subroutine address"), "JSR");
+                        REG_INCR(SP);
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        REG_LOAD(AR, SP);
+                        REG_LOAD_OR_MASK(BR, PC, 0b1111111111111);
+                        PHASE_END();
+
+                        CLOCK_TICK();
+                        DO_WRITE();
+                        REG_LOAD_MASK(PC, IR, 0b1111111111111);
                         break;
 
                     case TrnOpcodes::JIG:
