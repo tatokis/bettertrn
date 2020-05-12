@@ -221,7 +221,6 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::ENA:
-#warning "CHECK IF ENA NEEDS TO TICK THE CLOCK"
                         EMIT_LOG(tr("Load argument to register A"), "ENA");
 
                         REG_LOAD_MASK(A, IR, 0b1111111111111);
