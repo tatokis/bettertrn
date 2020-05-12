@@ -411,7 +411,8 @@ void TrnEmu::run()
                         REG_INCR(SP);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        // For some reason these are executed in the same clock cycle
+                        //CLOCK_TICK();
                         REG_LOAD(AR, SP);
                         REG_LOAD_OR_MASK(BR, PC, 0b1111111111111);
                         PHASE_END();
@@ -525,6 +526,7 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::RET:
+                        EMIT_LOG(tr("Return from subroutine"), "RET");
                         REG_LOAD(AR, SP);
                         PHASE_END();
 

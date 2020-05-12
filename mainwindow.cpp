@@ -155,6 +155,7 @@ int MainWindow::loadNewFile(QString file)
     {
         ui->memoryTable->insertRow(i);
         MEM_STR_FORMAT(addr, memcontent, i, pgmmem.at(i));
+        ui->memoryTable->setItem(i, 0, new QTableWidgetItem());
         ui->memoryTable->setItem(i, 1, addr);
         ui->memoryTable->setItem(i, 2, memcontent);
     }
@@ -327,10 +328,16 @@ void MainWindow::memoryUpdate(int addr, quint32 data, TrnEmu::OperationType t)
     const QPalette& p = ui->memoryTable->palette();
     const QColor& c = (addr % 2 ? p.alternateBase().color() : p.base().color());
     // In place memory updates are not supported
+    QTableWidgetItem* memitem = ui->memoryTable->item(addr, 0);
+    if(!memitem)
+    {
+        qDebug() << "PC arrow at" << addr << "is null. Not updating UI";
+        return;
+    }
     if(t == TrnEmu::OperationType::Read)
-        animator->startReadAnimation(a, d, ui->memoryTable->item(addr, 0), c);
+        animator->startReadAnimation(a, d, memitem, c);
     else
-        animator->startWriteAnimation(a, d, ui->memoryTable->item(addr, 0), c);
+        animator->startWriteAnimation(a, d, memitem, c);
 }
 
 #define REG_CASE(r)  case TrnEmu::Register::r: \

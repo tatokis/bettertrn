@@ -396,6 +396,7 @@ bool AsmParser::MnemonicHasArgs(const qint8& op)
         case TrnOpcodes::SHAL:
         case TrnOpcodes::SAXL:
         case TrnOpcodes::CMA:
+        case TrnOpcodes::RET:
             return false;
         default:
             return true;
