@@ -99,6 +99,11 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
         {
             foreach(const QStringRef& _arg, arglist)
             {
+                if(!_arg.length())
+                {
+                    errstr = QObject::tr("Empty argument passed");
+                    return lnum;
+                }
                 QStringRef arg = _arg;
                 bool hex = (args.startsWith(QChar('$')));
                 if(hex)
@@ -215,6 +220,7 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
                 // Insert data to memory
                 // Resize the memory first if needed
                 int argcount = arglistint.count();
+                qDebug() << "CON mempos" << currentmempos;
                 if(outvec.size() < currentmempos + argcount)
                 {
                     outvec.resize(currentmempos + argcount);
@@ -237,13 +243,14 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
                     return lnum;
                 }
 
-                // FIXME: is this enough?
-                if(outvec.size() < currentmempos + arglistint.count())
+                int resarg = arglistint.at(0);
+                qDebug() << "RES mempos" << currentmempos;
+                if(outvec.size() < currentmempos + resarg)
                 {
-                    outvec.resize(currentmempos + arglistint.count());
-                    qDebug() << "resize to" << currentmempos + arglistint.count() << "ppsize" << outvec.count();
+                    outvec.resize(currentmempos + resarg);
+                    qDebug() << "resize to" << currentmempos + resarg << "newsize" << outvec.count();
                 }
-
+                currentmempos += resarg;
             }
             else if(insn == "ORG")
             {
