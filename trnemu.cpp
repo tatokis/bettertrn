@@ -192,7 +192,7 @@ void TrnEmu::run()
 
                     case TrnOpcodes::STA:
                         EMIT_LOG(tr("Store register A to the argument address"), "STA");
-                        REG_LOAD(A, BR);
+                        REG_LOAD(BR, A);
                         PHASE_END();
 
                         CLOCK_TICK();
@@ -201,7 +201,7 @@ void TrnEmu::run()
 
                     case TrnOpcodes::STX:
                         EMIT_LOG(tr("Store register X to the argument address"), "STX");
-                        REG_LOAD(X, BR);
+                        REG_LOAD(BR, X);
                         PHASE_END();
 
                         CLOCK_TICK();
