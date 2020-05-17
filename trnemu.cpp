@@ -4,6 +4,23 @@
 #include <QMutexLocker>
 #include "trnopcodes.h"
 
+#warning Implement first and last overflow cases
+// Note: The original TRN checks for overflow only under the following conditions
+// A = A + BR
+// A++
+// A--
+// AR = (IR & 0b1111111111111) + I
+// The last one happens when doing an indexed reference
+
+// Overflow is always set to 0 after a JPO
+// Else, it's updated instantly
+
+// The S register is set to the same value as the A register sign bit (19)
+// It is updated after every phase
+// Z is set to 1 if A == 0
+// This is also updated after every phase
+// WARNING: The original TRN starts with Z set to 0, even though A is 0 too
+
 // Format strings used for logging
 static const QString outofbounds = QObject::tr("Attempted to access memory out of bounds at index %1.");
 static const QString regincr = QObject::tr("Register %1++");
@@ -15,6 +32,8 @@ static const QString regassignormask("%1 ← %1 | (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
 static const QString regldderef("%1 ← [%2]");
 static const QString regstderef("[%1] ← %2");
+
+// FIXME: convert some of these into functions
 
 #define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
 
@@ -57,8 +76,10 @@ static const QString regstderef("[%1] ← %2");
                                     EMIT_LOG(regstderef.arg(regToString[Register::dst], regToString[Register::src]), QString::number(reg##dst));\
                                     emit memoryUpdated(reg##dst, reg##src, OperationType::Write)
 
+
 // FIXME: check if the Z S V registers need to be updated here in the ui(?), as the macro is used in an internal action as well
 #define REG_INCR(dst)   reg##dst++; \
+                        reg##dst &= 0b11111111111111111111; \
                         EMIT_LOG(regincr.arg(regToString[Register::dst]), QString::number(reg##dst)); \
                         emit registerUpdated(Register::dst, OperationType::InPlace, reg##dst)
 
@@ -68,6 +89,7 @@ static const QString regstderef("[%1] ← %2");
                         emit registerUpdated(Register::CLOCK, OperationType::InPlace, regCLOCK)
 
 #define REG_DECR(dst)   reg##dst--; \
+                        reg##dst &= 0b11111111111111111111; \
                         EMIT_LOG(regdecr.arg(regToString[Register::dst]), QString::number(reg##dst)); \
                         emit registerUpdated(Register::dst, OperationType::InPlace, reg##dst)
 
@@ -224,6 +246,7 @@ void TrnEmu::run()
                         EMIT_LOG(tr("Load argument to register A"), "ENA");
 
                         REG_LOAD_MASK(A, IR, 0b1111111111111);
+#warning ENA -1 is broken
 
                         PHASE_END();
                         break;
@@ -402,7 +425,10 @@ void TrnEmu::run()
                     case TrnOpcodes::JPO:
                         EMIT_LOG(tr("Jump to address if overflow"), "JPO");
                         if(regV & 0b1)
+                        {
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
+                            REG_ZERO(V); // Reset the overflow
+                        }
                         break;
 
                     case TrnOpcodes::JSR:
@@ -545,13 +571,15 @@ void TrnEmu::run()
                         continue;
 
                     case TrnOpcodes::HLT:
+                    {
                         regH = 1;
                         EMIT_LOG(tr("Halt"), "HLT");
+                        QString num = QString::number(1);
+                        EMIT_LOG(regassign.arg(regToString[Register::H], num), num);
                         emit registerUpdated(Register::H, OperationType::InPlace, (quint8)1);
                         return;
-
+                    }
                     default:
-                        // FIXME: Add error string
                         qDebug() << "Invalid opcode";
                         emit executionError(tr("Invalid opcode %1").arg(opcode, 5, 2, QChar('0')));
                         return;
@@ -564,9 +592,33 @@ void TrnEmu::run()
         REG_ZERO(SC);
 
         emit registerUpdated(Register::F, OperationType::InPlace, regF);
+
+#warning Check if these need to be ran on functions that continue early, such as RET
+        // Check for Zero
+        // Only update the UI if the state has changed
+        quint8 isZero = !(regA & 0b11111111111111111111);
+        // This only works because regZ can either be 0 or 1, otherwise we'd need to !!regZ
+        if(isZero != regZ)
+        {
+            regZ = isZero;
+            QString num = QString::number(isZero);
+            EMIT_LOG(regassign.arg(regToString[Register::Z], num), num);
+            emit registerUpdated(Register::Z, OperationType::InPlace, isZero);
+        }
+
+        // Check for sign. It's the 19th bit
+        quint8 isNegative = !!(regA & 0b10000000000000000000);
+        if(isNegative != regS)
+        {
+            regS = isNegative;
+            QString num = QString::number(isNegative);
+            EMIT_LOG(regassign.arg(regToString[Register::S], num), num);
+            emit registerUpdated(Register::S, OperationType::InPlace, isNegative);
+        }
+
         CHECKPOINT;
     }
-    qDebug() << "Thread has ended";
+    qDebug() << "TRN Emulation thread has ended";
 }
 
 void TrnEmu::pause()
