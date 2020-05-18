@@ -104,6 +104,7 @@ private:
     QWaitCondition* _inputCond;
     bool _shouldPause;
     bool _paused; // This is NOT protected by a mutex. Must only be used by the parent thread. Same as getPaused
+    bool overflow;
 signals:
     //void dataModified(Register, OperationType);
     void memoryUpdated(int addr, quint32 data, OperationType t);

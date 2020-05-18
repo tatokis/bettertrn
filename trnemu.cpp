@@ -92,7 +92,6 @@ static const QString regstderef("[%1] ← %2");
                                     EMIT_LOG(regstderef.arg(regToString[Register::dst], regToString[Register::src]), QString::number(reg##dst));\
                                     emit memoryUpdated(reg##dst, reg##src, OperationType::Write)
 
-
 // FIXME: check if the Z S V registers need to be updated here in the ui(?), as the macro is used in an internal action as well
 #define REG_INCR(dst)   reg##dst++; \
                         reg##dst &= 0b11111111111111111111; \
@@ -127,13 +126,9 @@ static const QString regstderef("[%1] ← %2");
 #define DO_READ()   REG_LOAD_DEREF(BR, AR)
 #define DO_WRITE()  REG_STORE_DEREF(AR, BR)
 
-/*#define REG_ZERO_OPCODE(r)  reg##r &= 0b1111111111111; \
-                            emit registerUpdated(Register::r, OperationType::InPlace, reg##r)
-                            */
-
 TrnEmu::TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, QObject* parent) :
     QThread(parent), _memory(pgm), _isProcessing(new QMutex()), _sleepInterval(sleepInterval), _cond(new QWaitCondition()),
-    _inputCond(new QWaitCondition()), _shouldPause(false), _paused(false)
+    _inputCond(new QWaitCondition()), _shouldPause(false), _paused(false), overflow(false)
 {
     reset();
 }
@@ -362,7 +357,8 @@ void TrnEmu::run()
                         PHASE_END();
 
                         CLOCK_TICK();
-                        regA = regA + regBR;
+                        //ADD_WITH_OVERFLOW_CHECK(A, BR);
+                        regA += regBR;
                         emit executionLog(regCLOCK, "A = A + BR", QString::number(regA));
                         emit registerUpdated(Register::BR, OperationType::Read, regBR);
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
@@ -623,6 +619,9 @@ void TrnEmu::run()
 
         emit registerUpdated(Register::F, OperationType::InPlace, regF);
 
+        // FIXME: Convert the following three into a function
+        // TRN does these at the end of each phase, so we'll do the same here, even though it's a bit wasteful
+
         // Check for Zero
         // Only update the UI if the state has changed
         quint8 isZero = !(regA & 0b11111111111111111111);
@@ -643,6 +642,17 @@ void TrnEmu::run()
             QString num = QString::number(isNegative);
             EMIT_LOG(regassign.arg(regToString[Register::S], num), num);
             emit registerUpdated(Register::S, OperationType::InPlace, isNegative);
+        }
+
+        // Finally, check for overflow
+        // We need to use a separate variable, as it gets cleared on every instruction
+        // Update it if necessary
+        if(overflow != regV)
+        {
+            regV = overflow;
+            QString num = QString::number(regV);
+            EMIT_LOG(regassign.arg(regToString[Register::V], num), num);
+            emit registerUpdated(Register::V, OperationType::InPlace, regV);
         }
 
         CHECKPOINT;
