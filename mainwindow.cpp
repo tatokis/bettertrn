@@ -228,6 +228,9 @@ void MainWindow::on_startStopBtn_clicked()
         ui->logTable->setItem(row, 2, new QTableWidgetItem(val));
         if(autoscroll)
             ui->logTable->scrollToBottom();
+
+        // Resize to contents
+        ui->logTable->resizeColumnToContents(2);
     });
 
     connect(emu, &TrnEmu::outputSet, this, [this](quint32 out) {
