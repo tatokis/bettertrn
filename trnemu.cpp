@@ -409,7 +409,7 @@ void TrnEmu::run()
 
                     case TrnOpcodes::CMA:
                         EMIT_LOG(tr("Calculate register A's complement"), "CMA");
-                        regA = ~regA;
+                        regA = (~regA) & 0b11111111111111111111;
                         EMIT_LOG("A = ~A", QString::number(regA));
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
                         break;
@@ -608,7 +608,6 @@ void TrnEmu::run()
 
         emit registerUpdated(Register::F, OperationType::InPlace, regF);
 
-#warning Check if these need to be ran on functions that continue early, such as RET
         // Check for Zero
         // Only update the UI if the state has changed
         quint8 isZero = !(regA & 0b11111111111111111111);

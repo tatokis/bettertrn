@@ -74,6 +74,18 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
             return lnum;
         }
 
+        // Check if insn ends with ",I", and if so remove it and mark it appropriately
+        quint32 indexedref = (insn.endsWith(",I") ? 0b00000010000000000000 : 0);
+        if(indexedref)
+            insn.chop(2);
+
+        quint32 indirectref = (args.startsWith(QChar('(')) && args.endsWith(QChar(')')) ? 0b00000100000000000000 : 0);
+        if(indirectref)
+        {
+            args.chop(1);
+            args = args.mid(1);
+        }
+
         qDebug() << "Mnemonic" << insn << "args" << args;
 
         // Add a label to the symbol table
@@ -175,20 +187,6 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
                     argsok = false;
                 }
             }
-        }
-
-        // Check if insn ends with ",I", and if so remove it and mark it appropriately
-        quint32 indexedref = (insn.endsWith(",I") ? 0b00000010000000000000 : 0);
-        if(indexedref)
-            insn.chop(2);
-
-        qDebug() << "Generic Mnemonic" << insn;
-
-        quint32 indirectref = (args.startsWith(QChar('(')) && args.endsWith(QChar(')')) ? 0b00000100000000000000 : 0);
-        if(indirectref)
-        {
-            args.chop(1);
-            args = args.mid(1);
         }
 
         // Convert insn to opcode and add to vector
