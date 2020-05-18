@@ -51,6 +51,7 @@ private:
     inline void resetGUI();
     int pcarrowpos;
     QTableWidgetItem* _pcarrow;
+    void askEmuThreadToStop();
 };
 
 #endif // MAINWINDOW_H

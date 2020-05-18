@@ -127,6 +127,14 @@ int MainWindow::loadNewFile(QString file)
     QFileInfo fi(file);
     fileLastModified = fi.lastModified();
 
+    // If the emulator is running, tell it to shut down and restart
+    if(emu)
+    {
+        askEmuThreadToStop();
+        // This will block the UI for a bit, but the alternative is more painful
+        emu->wait();
+    }
+
     // Set up the filesystem watcher for any changes
     QStringList oldfiles = fswatcher.files();
     qDebug() << "Watcher files" << oldfiles;
@@ -180,18 +188,23 @@ int MainWindow::loadNewFile(QString file)
     return 0;
 }
 
+void MainWindow::askEmuThreadToStop()
+{
+    ui->statusBar->showMessage(tr("Stopping emulator"));
+    emu->requestInterruption();
+    ui->startStopBtn->setEnabled(false);
+    ui->pauseBtn->setEnabled(false);
+    ui->stepBtn->setEnabled(false);
+    resumeEmuIfRunning();
+    // Send bogus input to resume execution if waiting for input but the user wants to quit
+    emu->setInput(0);
+}
+
 void MainWindow::on_startStopBtn_clicked()
 {
     if(emu)
     {
-        ui->statusBar->showMessage(tr("Stopping emulator"));
-        emu->requestInterruption();
-        ui->startStopBtn->setEnabled(false);
-        ui->pauseBtn->setEnabled(false);
-        ui->stepBtn->setEnabled(false);
-        resumeEmuIfRunning();
-        // Send bogus input to resume execution if waiting for input but the user wants to quit
-        emu->setInput(0);
+        askEmuThreadToStop();
         return;
     }
 
