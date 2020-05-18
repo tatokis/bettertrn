@@ -68,6 +68,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="regBRLabel">
+            <property name="toolTip">
+             <string>Buffer Register</string>
+            </property>
             <property name="text">
              <string notr="true">BR:</string>
             </property>
@@ -78,6 +81,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="regARLabel">
+            <property name="toolTip">
+             <string>Address Register</string>
+            </property>
             <property name="text">
              <string notr="true">AR:</string>
             </property>
@@ -88,6 +94,9 @@
           </item>
           <item row="0" column="2">
            <widget class="QLabel" name="regALabel">
+            <property name="toolTip">
+             <string>Accumulator</string>
+            </property>
             <property name="text">
              <string notr="true">A:</string>
             </property>
@@ -98,6 +107,9 @@
           </item>
           <item row="9" column="0">
            <widget class="QLabel" name="label_10">
+            <property name="toolTip">
+             <string>Overflow</string>
+            </property>
             <property name="text">
              <string notr="true">V:</string>
             </property>
@@ -112,6 +124,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Buffer Register</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -129,6 +144,9 @@
           </item>
           <item row="9" column="2">
            <widget class="QLabel" name="label_12">
+            <property name="toolTip">
+             <string>Halt</string>
+            </property>
             <property name="text">
              <string notr="true">H:</string>
             </property>
@@ -143,6 +161,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Sign</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -181,6 +202,9 @@
           </item>
           <item row="7" column="2">
            <widget class="QLabel" name="label_7">
+            <property name="toolTip">
+             <string>Zero</string>
+            </property>
             <property name="text">
              <string notr="true">Z:</string>
             </property>
@@ -191,6 +215,9 @@
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="regSCLabel">
+            <property name="toolTip">
+             <string>State Counter</string>
+            </property>
             <property name="text">
              <string notr="true">SC:</string>
             </property>
@@ -201,6 +228,9 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="regIRLabel">
+            <property name="toolTip">
+             <string>Instruction Register</string>
+            </property>
             <property name="text">
              <string notr="true">IR:</string>
             </property>
@@ -215,6 +245,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Stack Pointer</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -247,6 +280,9 @@
               <family>Monospace</family>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Clock</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -267,6 +303,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string/>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -289,6 +328,9 @@
               <family>Monospace</family>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Halt</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -309,6 +351,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Accumulator</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -331,6 +376,9 @@
               <family>Monospace</family>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Zero</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -351,6 +399,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>State Counter</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -373,6 +424,9 @@
               <family>Monospace</family>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Overflow</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -389,6 +443,9 @@
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="regSPLabel">
+            <property name="toolTip">
+             <string>Stack Pointer</string>
+            </property>
             <property name="text">
              <string notr="true">SP:</string>
             </property>
@@ -399,6 +456,9 @@
           </item>
           <item row="5" column="2">
            <widget class="QLabel" name="clockLabel">
+            <property name="toolTip">
+             <string>Clock</string>
+            </property>
             <property name="text">
              <string notr="true">Clock:</string>
             </property>
@@ -409,6 +469,9 @@
           </item>
           <item row="3" column="2">
            <widget class="QLabel" name="regPCLabel">
+            <property name="toolTip">
+             <string>Program Counter</string>
+            </property>
             <property name="text">
              <string notr="true">PC:</string>
             </property>
@@ -423,6 +486,9 @@
              <font>
               <family>Monospace</family>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Address Register</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
@@ -458,6 +524,9 @@
               <family>Monospace</family>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Program Counter</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -479,6 +548,9 @@
               <family>Monospace</family>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Instruction Register</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -495,6 +567,9 @@
           </item>
           <item row="2" column="2">
            <widget class="QLabel" name="regILabel">
+            <property name="toolTip">
+             <string/>
+            </property>
             <property name="text">
              <string notr="true">I:</string>
             </property>
@@ -546,6 +621,9 @@
           </item>
           <item row="8" column="2">
            <widget class="QLabel" name="label_11">
+            <property name="toolTip">
+             <string>Sign</string>
+            </property>
             <property name="text">
              <string notr="true">S:</string>
             </property>

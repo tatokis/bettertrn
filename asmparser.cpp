@@ -54,7 +54,6 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
         QString args = m.captured(3);
 
         // Remove comments from arguments, as the regex matches them too
-        // FIXME: maybe convert this to a QStringRef
         const QString commentstr("//");
         int commentstart = args.indexOf(commentstr);
         if(commentstart != -1)
