@@ -173,21 +173,36 @@ void TrnEmu::run()
 
                 CLOCK_TICK();
                 // Detect the type of reference
-                if(regIR & 0b10000000000000)
+                if(regIR & 0b10000000000000) // Indexed
                     regF = 0b01;
-                else if(regIR & 0b1000000000000)
+                else if(regIR & 0b100000000000000) // Indirect
+                    regF = 0b10;
+                else
+                    regF = 0b11; // None
+                break;
+
+            case 0b01:
+                EMIT_LOG("Dereferencing argument", QString("Indexed"));
+                regAR = (regIR & 0b1111111111111) + regI;
+                EMIT_LOG("AR ← (IR & 0b1111111111111) + I", QString::number(regAR));
+                emit registerUpdated(Register::IR, OperationType::Read, regIR);
+                emit registerUpdated(Register::I, OperationType::Read, regI);
+                emit registerUpdated(Register::AR, OperationType::Write, regAR);
+
+                // Now that we're done, check if we also need to perform an indirect deref
+                if(regIR & 0b100000000000000)
                     regF = 0b10;
                 else
                     regF = 0b11;
                 break;
 
-            case 0b01:
-                qDebug() << "Indirect Reference";
-                regF = 0b10;
-                break;
-
             case 0b10:
-                qDebug() << "Indexed Reference";
+                EMIT_LOG("Dereferencing argument", QString("Indirect"));
+                DO_READ();
+                PHASE_END();
+
+                CLOCK_TICK();
+                REG_LOAD_MASK(AR, BR, 0b1111111111111);
                 regF = 0b11;
                 break;
 
