@@ -26,7 +26,7 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
     quint64 lnum = 0;
     // A regex here is probably not a good idea, but it's good enough for now.
     // Famous last words!
-    QRegularExpression regex("^([A-Z\\d]+:)?[ \t]*([A-Z,]+)[ \t]*(.+)?$", QRegularExpression::MultilineOption);
+    QRegularExpression regex("^([A-Z\\d]+:)?[ \\t]*([A-Z,]+)[ \\t]*(.+)?$", QRegularExpression::MultilineOption);
     int currentmempos = 0;
     QString curprogname;
 
@@ -74,7 +74,7 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
             return lnum;
         }
 
-        qDebug() << "Mnemonic" << insn;
+        qDebug() << "Mnemonic" << insn << "args" << args;
 
         // Add a label to the symbol table
         if(!label.isEmpty())
@@ -91,7 +91,8 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
         // Split arguments on comma
         // All of this is fine even if no arguments exist
         QVector<QStringRef> arglist = args.splitRef(QChar(','));
-        QVector<quint16> arglistint;
+        // This has to be 32 bits so that it fits whole 20 bit numbers (such as ones set by CON)
+        QVector<quint32> arglistint;
         bool argsok = true;
         // FIXME: Make this look nicer
         // Ignore arguments to NAM
@@ -106,11 +107,22 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
                 }
                 QStringRef arg = _arg;
                 bool hex = (args.startsWith(QChar('$')));
+                int base = 10;
                 if(hex)
+                {
                     arg = arg.mid(1);
-                // short is guaranteed to be at least 16 bits
+                    base = 16;
+                }
+
                 bool curargok;
-                arglistint.append(arg.toUShort(&curargok, (hex ? 16 : 10)));
+                // Try to parse as unsigned first
+                // long is guaranteed to be at least 32 bits
+                quint32 numarg = (quint32)arg.toULong(&curargok, base);
+                // If that fails, parse it as signed
+                if(!curargok)
+                    numarg = (ulong)arg.toLong(&curargok, base);
+
+                arglistint.append(numarg);
 
                 // If the conversion failed, check for a label
                 if(curargok)
@@ -227,10 +239,10 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
                     qDebug() << "resize to" << currentmempos + argcount << "newsize" << outvec.count();
                 }
 
-                int basemempos = currentmempos;
                 for(int i = 0; i < argcount; i++)
                 {
-                    outvec[basemempos + i] = arglistint.at(i);
+                    // Make sure it's chopped to 20 bits
+                    outvec[currentmempos] = arglistint.at(i) & 0b11111111111111111111;
                     currentmempos++;
                 }
             }
@@ -289,9 +301,6 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
                 return lnum;
             }
         }
-
-        if(!args.isEmpty())
-            qDebug() << "Args" << args;
 
         ba = infile.readLine();
     }

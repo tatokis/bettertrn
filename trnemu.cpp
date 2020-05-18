@@ -50,6 +50,22 @@ static const QString regstderef("[%1] ← %2");
                                         emit registerUpdated(Register::src, OperationType::Read, reg##src); \
                                         emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
+// Sign extension
+// It's pretty easy since we're always going from 13 bits to 20
+// If the sign bit is 1, we just OR 0b1111111000000000000
+// If it's not, we can just leave it as-is, as it will default to 0 due to how REG_LOAD_MASK works
+#warning Check if ENI needs sign extension as well
+#define REG_LOAD_SIGN_EXT(dst, src)     reg##dst = reg##src & 0b1111111111111; \
+                                        if(reg##dst & 0b1000000000000) \
+                                            reg##dst |= 0b11111110000000000000; \
+                                        EMIT_LOG(regassignmask.arg(regToString[Register::dst], regToString[Register::src], \
+                                            QString("0b1111111111111")), \
+                                            QString::number(reg##dst)\
+                                        ); \
+                                        emit registerUpdated(Register::src, OperationType::Read, reg##src); \
+                                        emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
+
+
 #define REG_LOAD_OR_MASK(dst, src, mask)    reg##dst |= reg##src & mask; \
                                             EMIT_LOG(regassignormask.arg(regToString[Register::dst], regToString[Register::src], \
                                               QString("0b%1").arg(mask, 13, 2, QChar('0'))), \
@@ -245,8 +261,7 @@ void TrnEmu::run()
                     case TrnOpcodes::ENA:
                         EMIT_LOG(tr("Load argument to register A"), "ENA");
 
-                        REG_LOAD_MASK(A, IR, 0b1111111111111);
-#warning ENA -1 is broken
+                        REG_LOAD_SIGN_EXT(A, IR);
 
                         PHASE_END();
                         break;
@@ -297,15 +312,15 @@ void TrnEmu::run()
                                 REG_INCR(I);
                                 break;
                             case InPlaceRegUpdateArg::DCA:
-                                EMIT_LOG(tr("Decrement register A"), "INA");
+                                EMIT_LOG(tr("Decrement register A"), "DCA");
                                 REG_DECR(A);
                                 break;
                             case InPlaceRegUpdateArg::DCX:
-                                EMIT_LOG(tr("Decrement register X"), "INX");
+                                EMIT_LOG(tr("Decrement register X"), "DCX");
                                 REG_DECR(X);
                                 break;
                             case InPlaceRegUpdateArg::DCI:
-                                EMIT_LOG(tr("Decrement register I"), "INI");
+                                EMIT_LOG(tr("Decrement register I"), "DCI");
                                 REG_DECR(I);
                                 break;
                         }
@@ -406,25 +421,25 @@ void TrnEmu::run()
 
                     case TrnOpcodes::JPN:
                         EMIT_LOG(tr("Jump to address if A is negative"), "JPN");
-                        if(regS & 0b1)
+                        if(regS)
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         break;
 
                     case TrnOpcodes::JAG:
                         EMIT_LOG(tr("Jump to address if A is greater than zero"), "JAG");
-                        if(!(regS & 0b1) && !(regZ & 0b1)) // FIXME: optimize
+                        if(!(regS || regZ))
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         break;
 
                     case TrnOpcodes::JPZ:
                         EMIT_LOG(tr("Jump to address if A is zero"), "JPZ");
-                        if(regZ & 0b1)
+                        if(regZ)
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         break;
 
                     case TrnOpcodes::JPO:
                         EMIT_LOG(tr("Jump to address if overflow"), "JPO");
-                        if(regV & 0b1)
+                        if(regV)
                         {
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
                             REG_ZERO(V); // Reset the overflow
