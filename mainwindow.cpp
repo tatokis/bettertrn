@@ -72,7 +72,7 @@ void MainWindow::on_actionAbout_BetterTRN_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString file = QFileDialog::getOpenFileName(this, tr("Open file"), QString(), tr("Assembly (*.asm);;Memory Image (*mif)"));
+    QString file = QFileDialog::getOpenFileName(this, tr("Open file"), QString(), tr("TRN Code (*.asm *.mif)"));
     // Return if the dialog was cancelled
     if(file.isEmpty())
         return;
@@ -92,6 +92,8 @@ void MainWindow::on_actionSpeed_triggered()
 
 void MainWindow::fileChangedOnDisk(QString file)
 {
+    // Don't allow any more events to go through while we're waiting for the user to answer
+    fswatcher.blockSignals(true);
     QFileInfo fi(file);
     QDateTime newLastModified = fi.lastModified();
     if(fileLastModified == newLastModified)
@@ -101,12 +103,15 @@ void MainWindow::fileChangedOnDisk(QString file)
     qDebug() << "File" << file << "changed";
 
     // Ask the user if they want to reload the file
-    if(QMessageBox::question(this, tr("File was modified"), tr("The file %1 was modified.\nDo you wish to reload it?").arg(file), QMessageBox::Yes, QMessageBox::No)
+    if(QMessageBox::question(this, tr("File was modified"), tr("The file %1 was modified.\nDo you wish to reload it?").arg(file), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes)
             != QMessageBox::Yes)
+    {
+        fswatcher.blockSignals(false);
         return;
+    }
 
-    if(loadNewFile(file))
-        QMessageBox::critical(this, tr("Error opening file"), tr("Could not open the selected file"));
+    fswatcher.blockSignals(false);
+    loadNewFile(file);
 }
 
 int MainWindow::loadNewFile(QString file)
@@ -277,6 +282,10 @@ void MainWindow::on_actionSave_Memory_Image_triggered()
     QString path = QFileDialog::getSaveFileName(this, tr("Save Memory Image"), QString(), tr("Memory Image (*mif)"));
     if(path.isEmpty())
         return;
+
+    // If the path doesn't end with .mif, add it
+    if(!path.endsWith(".mif", Qt::CaseInsensitive))
+        path.append(".mif");
 
     QFile f(path);
     if(!f.open(QIODevice::WriteOnly))
