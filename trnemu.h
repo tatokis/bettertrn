@@ -105,6 +105,9 @@ private:
     bool _shouldPause;
     bool _paused; // This is NOT protected by a mutex. Must only be used by the parent thread. Same as getPaused
     bool overflow;
+    // Private internal functions that should only be called by the emu thread
+    void updateFlagReg(quint8& reg, quint8 isFlag, Register regEnum);
+
 signals:
     //void dataModified(Register, OperationType);
     void memoryUpdated(int addr, quint32 data, OperationType t);

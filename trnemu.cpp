@@ -619,45 +619,35 @@ void TrnEmu::run()
 
         emit registerUpdated(Register::F, OperationType::InPlace, regF);
 
-        // FIXME: Convert the following three into a function
         // TRN does these at the end of each phase, so we'll do the same here, even though it's a bit wasteful
+        // Only update the UI if the state has changed
 
         // Check for Zero
-        // Only update the UI if the state has changed
         quint8 isZero = !(regA & 0b11111111111111111111);
         // This only works because regZ can either be 0 or 1, otherwise we'd need to !!regZ
-        if(isZero != regZ)
-        {
-            regZ = isZero;
-            QString num = QString::number(isZero);
-            EMIT_LOG(regassign.arg(regToString[Register::Z], num), num);
-            emit registerUpdated(Register::Z, OperationType::InPlace, isZero);
-        }
+        updateFlagReg(regZ, isZero, Register::Z);
 
         // Check for sign. It's the 19th bit
         quint8 isNegative = !!(regA & 0b10000000000000000000);
-        if(isNegative != regS)
-        {
-            regS = isNegative;
-            QString num = QString::number(isNegative);
-            EMIT_LOG(regassign.arg(regToString[Register::S], num), num);
-            emit registerUpdated(Register::S, OperationType::InPlace, isNegative);
-        }
+        updateFlagReg(regS, isNegative, Register::S);
 
         // Finally, check for overflow
-        // We need to use a separate variable, as it gets cleared on every instruction
-        // Update it if necessary
-        if(overflow != regV)
-        {
-            regV = overflow;
-            QString num = QString::number(regV);
-            EMIT_LOG(regassign.arg(regToString[Register::V], num), num);
-            emit registerUpdated(Register::V, OperationType::InPlace, regV);
-        }
+        // We need to use a separate variable, as it gets checked on every cycle
+        updateFlagReg(regV, overflow, Register::V);
 
         CHECKPOINT;
     }
     qDebug() << "TRN Emulation thread has ended";
+}
+
+void TrnEmu::updateFlagReg(quint8& reg, quint8 isFlag, Register regEnum)
+{
+    if(isFlag == reg)
+        return;
+    reg = isFlag;
+    QString num = QString::number(isFlag);
+    EMIT_LOG(regassign.arg(regToString[regEnum], num), num);
+    emit registerUpdated(regEnum, OperationType::InPlace, isFlag);
 }
 
 void TrnEmu::pause()
