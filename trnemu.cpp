@@ -4,7 +4,6 @@
 #include <QMutexLocker>
 #include "trnopcodes.h"
 
-#warning Implement first and last overflow cases
 // Note: The original TRN checks for overflow only under the following conditions
 // A = A + BR
 // A++
