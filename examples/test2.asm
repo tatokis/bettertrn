@@ -1,0 +1,6 @@
+	NAM test2
+	ORG 0
+	JMP DATA
+DATA:	JMP FIN
+FIN:	HLT
+	END

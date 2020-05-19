@@ -933,6 +933,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionTRN_Reference"/>
+    <addaction name="actionExample_Programs"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_BetterTRN"/>
@@ -993,6 +994,11 @@
    </property>
    <property name="text">
     <string>Log internal CPU Execution</string>
+   </property>
+  </action>
+  <action name="actionExample_Programs">
+   <property name="text">
+    <string>Example Programs</string>
    </property>
   </action>
  </widget>

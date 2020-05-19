@@ -612,12 +612,22 @@ void MainWindow::on_inputLineEdit_editingFinished()
 
 void MainWindow::on_actionTRN_Reference_triggered()
 {
-    // Open the PDF
-    // First, get the path to the file
-    QFileInfo fi("docs/TRNdocument-v2.pdf");
+    openWithDefaultApp("docs/TRNdocument-v2.pdf");
+}
+
+void MainWindow::on_actionExample_Programs_triggered()
+{
+    openWithDefaultApp("examples");
+}
+
+void MainWindow::openWithDefaultApp(QString path)
+{
+    // Open the file
+    // First, get the path
+    QFileInfo fi(path);
     if(!fi.exists())
     {
-        QMessageBox::critical(this, tr("Documentation not found"), tr("Could not open the documentation.\nFile not found"));
+        QMessageBox::critical(this, tr("Path not found"), tr("Could not open the specified resource.\nPath not found"));
         return;
     }
     QUrl url = QUrl::fromLocalFile(fi.absoluteFilePath());

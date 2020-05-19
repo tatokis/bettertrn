@@ -1,0 +1,5 @@
+	INP
+	OUT
+	HLT
+
+  

@@ -49,9 +49,12 @@ FORMS += \
         mainwindow.ui \
     aboutwindow.ui
 
-COPIES += pdf
+COPIES += pdf examples
 pdf.files = docs/TRNdocument-v2.pdf
 pdf.path = $$OUT_PWD/docs
+
+examples.files = $$files(examples/*)
+examples.path = $$OUT_PWD/examples
 
 # FIXME: add the rest of the docs
 

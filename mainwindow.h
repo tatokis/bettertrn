@@ -37,6 +37,8 @@ private slots:
     void on_inputLineEdit_editingFinished();
     void on_actionTRN_Reference_triggered();
 
+    void on_actionExample_Programs_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemWatcher fswatcher;
@@ -53,6 +55,7 @@ private:
     QTableWidgetItem* _pcarrow;
     void askEmuThreadToStop();
     QFont monofont;
+    void openWithDefaultApp(QString path);
 };
 
 #endif // MAINWINDOW_H
