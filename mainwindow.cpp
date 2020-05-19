@@ -337,7 +337,7 @@ void MainWindow::emuThreadStopped()
 
 void MainWindow::on_actionSave_Memory_Image_triggered()
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Save Memory Image"), QString(), tr("Memory Image (*mif)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Save Memory Image"), QString(), tr("Memory Image (*.mif)"));
     if(path.isEmpty())
         return;
 
@@ -447,7 +447,8 @@ void MainWindow::registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, qui
 void MainWindow::registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, quint16 val)
 {
     AnimatedLabel* l;
-    switch(r)    {
+    switch(r)
+    {
         REG_CASE(AR);
         // Handle PC manually to set the arrow in the table
         case TrnEmu::Register::PC:
@@ -656,4 +657,45 @@ void MainWindow::setEmuDelay(int value)
     animator->setDuration(clockDelay);
     if(emu)
         emu->setDelay(clockDelay);
+}
+
+void MainWindow::on_actionSave_Log_triggered()
+{
+    if(emu && !emu->getPaused())
+    {
+        QMessageBox::warning(this, tr("Please pause the emulator"), tr("Can not save log while the emulator is running.\nPlease pause or stop it and try again."), QMessageBox::Ok);
+        return;
+    }
+    int rowcount = ui->logTable->rowCount();
+    if(!rowcount)
+    {
+        QMessageBox::warning(this, tr("Log is empty"), tr("The log is empty.\nPlease run the emulator first to generate messages."), QMessageBox::Ok);
+        return;
+    }
+
+    QString path = QFileDialog::getSaveFileName(this, tr("Save Log"), QString(), tr("Log File (*.csv)"));
+    if(path.isEmpty())
+        return;
+
+    // If the path doesn't end with .csv, add it
+    if(!path.endsWith(".csv", Qt::CaseInsensitive))
+        path.append(".csv");
+
+    QFile f(path);
+    if(!f.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::critical(this, tr("Error Saving Log"), tr("Could not open the file for writing"), QMessageBox::Ok);
+        return;
+    }
+
+    // Write the header
+    f.write(QString("Clock,Action,Value\n").toUtf8());
+    for(int i = 0; i < rowcount; i++)
+    {
+        QString str = QString("%1,%2,%3\n").arg(ui->logTable->item(i, 0)->text(),
+                                                ui->logTable->item(i, 1)->text(),
+                                                ui->logTable->item(i, 2)->text());
+
+        f.write(str.toUtf8());
+    }
 }

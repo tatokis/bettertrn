@@ -39,6 +39,8 @@ private slots:
     void on_clockSlider_valueChanged(int value);
     void on_clockSpinBox_valueChanged(int value);
 
+    void on_actionSave_Log_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemWatcher fswatcher;

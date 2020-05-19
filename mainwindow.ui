@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>900</width>
-    <height>583</height>
+    <height>612</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -977,6 +977,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave_Memory_Image"/>
+    <addaction name="actionSave_Log"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -1051,6 +1052,11 @@
   <action name="actionExample_Programs">
    <property name="text">
     <string>Example Programs</string>
+   </property>
+  </action>
+  <action name="actionSave_Log">
+   <property name="text">
+    <string>Save Log</string>
    </property>
   </action>
  </widget>
