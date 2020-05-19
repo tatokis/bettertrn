@@ -15,13 +15,16 @@
 #include "qoverloadlegacy.h"
 #include <QScrollBar>
 #include <QToolButton>
+#include <QFontDatabase>
 
 #define MEM_STR_FORMAT(a, b, ai, di)    QTableWidgetItem* a = new QTableWidgetItem(QString::number(ai)); \
-                                        QTableWidgetItem* b = new QTableWidgetItem(QString("%1").arg(di, 20, 2, QChar('0')))
+                                        a->setFont(monofont); \
+                                        QTableWidgetItem* b = new QTableWidgetItem(QString("%1").arg(di, 20, 2, QChar('0'))); \
+                                        b->setFont(monofont)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0), _pcarrow(nullptr)
+    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0), _pcarrow(nullptr), monofont("Monospace")
 {
     ui->setupUi(this);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close, Qt::QueuedConnection);
@@ -46,6 +49,47 @@ MainWindow::MainWindow(QWidget *parent) :
     QToolButton* tbtn = ui->outputLineEdit->findChild<QToolButton*>();
     if(tbtn)
         tbtn->setEnabled(true);
+
+    // Because apparently it can't be done automatically,
+    // set everything containing binary numbers to use a fixed width font
+
+    // First, check if Monospace was found
+    if(QFontInfo(monofont).family() != "Monospace")
+    {
+        // If it wasn't, attempt to load Lucida Console,
+        // But also fall back to a generic font hint
+        monofont.setStyleHint(QFont::TypeWriter);
+        monofont.setFamily("Lucida Console");
+
+        // Finally, check that we actually got a fixed width font based on the hint
+        // If we didn't, then try to get whatever the system's default is
+        if(!QFontInfo(monofont).fixedPitch())
+            monofont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    }
+    // Resize it
+    monofont.setPointSize(11);
+
+    ui->memoryTable->resizeColumnsToContents();
+
+    // Update all the labels with the new font
+    ui->regBR->setFont(monofont);
+    ui->regA->setFont(monofont);
+    ui->regAR->setFont(monofont);
+    ui->regX->setFont(monofont);
+    ui->regSP->setFont(monofont);
+    ui->regI->setFont(monofont);
+    ui->regIR->setFont(monofont);
+    ui->regPC->setFont(monofont);
+    ui->regSC->setFont(monofont);
+    ui->clockValue->setFont(monofont);
+    ui->regF1->setFont(monofont);
+    ui->regZ->setFont(monofont);
+    ui->regF2->setFont(monofont);
+    ui->regS->setFont(monofont);
+    ui->regV->setFont(monofont);
+    ui->regH->setFont(monofont);
+    // And finally the output
+    ui->outputLineEdit->setFont(monofont);
 }
 
 MainWindow::~MainWindow()

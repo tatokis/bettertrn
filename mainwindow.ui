@@ -47,11 +47,6 @@
           </property>
           <item row="1" column="3">
            <widget class="AnimatedLabel" name="regX">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -120,11 +115,6 @@
           </item>
           <item row="0" column="1">
            <widget class="AnimatedLabel" name="regBR">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Buffer Register</string>
             </property>
@@ -157,11 +147,6 @@
           </item>
           <item row="8" column="3">
            <widget class="AnimatedLabel" name="regS">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Sign</string>
             </property>
@@ -181,11 +166,6 @@
           </item>
           <item row="8" column="1">
            <widget class="AnimatedLabel" name="regF2">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -241,11 +221,6 @@
           </item>
           <item row="2" column="1">
            <widget class="AnimatedLabel" name="regSP">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Stack Pointer</string>
             </property>
@@ -275,11 +250,6 @@
           </item>
           <item row="5" column="3">
            <widget class="AnimatedLabel" name="clockValue">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Clock</string>
             </property>
@@ -299,11 +269,6 @@
           </item>
           <item row="2" column="3">
            <widget class="AnimatedLabel" name="regI">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string/>
             </property>
@@ -323,11 +288,6 @@
           </item>
           <item row="9" column="3">
            <widget class="AnimatedLabel" name="regH">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Halt</string>
             </property>
@@ -347,11 +307,6 @@
           </item>
           <item row="0" column="3">
            <widget class="AnimatedLabel" name="regA">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Accumulator</string>
             </property>
@@ -371,11 +326,6 @@
           </item>
           <item row="7" column="3">
            <widget class="AnimatedLabel" name="regZ">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Zero</string>
             </property>
@@ -395,11 +345,6 @@
           </item>
           <item row="5" column="1">
            <widget class="AnimatedLabel" name="regSC">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>State Counter</string>
             </property>
@@ -419,11 +364,6 @@
           </item>
           <item row="9" column="1">
            <widget class="AnimatedLabel" name="regV">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Overflow</string>
             </property>
@@ -482,11 +422,6 @@
           </item>
           <item row="1" column="1">
            <widget class="AnimatedLabel" name="regAR">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Address Register</string>
             </property>
@@ -519,11 +454,6 @@
           </item>
           <item row="3" column="3">
            <widget class="AnimatedLabel" name="regPC">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Program Counter</string>
             </property>
@@ -543,11 +473,6 @@
           </item>
           <item row="3" column="1">
            <widget class="AnimatedLabel" name="regIR">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="toolTip">
              <string>Instruction Register</string>
             </property>
@@ -580,11 +505,6 @@
           </item>
           <item row="7" column="1">
            <widget class="AnimatedLabel" name="regF1">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -762,11 +682,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
            <widget class="QTableWidget" name="memoryTable">
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-             </font>
-            </property>
             <property name="editTriggers">
              <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
             </property>

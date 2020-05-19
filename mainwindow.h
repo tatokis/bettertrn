@@ -52,6 +52,7 @@ private:
     int pcarrowpos;
     QTableWidgetItem* _pcarrow;
     void askEmuThreadToStop();
+    QFont monofont;
 };
 
 #endif // MAINWINDOW_H
