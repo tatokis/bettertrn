@@ -50,22 +50,6 @@ static const QString regstderef("[%1] ← %2");
                                         emit registerUpdated(Register::src, OperationType::Read, reg##src); \
                                         emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
-// Sign extension
-// It's pretty easy since we're always going from 13 bits to 20
-// If the sign bit is 1, we just OR 0b1111111000000000000
-// If it's not, we can just leave it as-is, as it will default to 0 due to how REG_LOAD_MASK works
-#warning Check if ENI needs sign extension as well
-#define REG_LOAD_SIGN_EXT(dst, src)     reg##dst = reg##src & 0b1111111111111; \
-                                        if(reg##dst & 0b1000000000000) \
-                                            reg##dst |= 0b11111110000000000000; \
-                                        EMIT_LOG(regassignmask.arg(regToString[Register::dst], regToString[Register::src], \
-                                            QString("0b1111111111111")), \
-                                            QString::number(reg##dst)\
-                                        ); \
-                                        emit registerUpdated(Register::src, OperationType::Read, reg##src); \
-                                        emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
-
-
 #define REG_LOAD_OR_MASK(dst, src, mask)    reg##dst |= reg##src & mask; \
                                             EMIT_LOG(regassignormask.arg(regToString[Register::dst], regToString[Register::src], \
                                               QString("0b%1").arg(mask, 13, 2, QChar('0'))), \
@@ -92,7 +76,6 @@ static const QString regstderef("[%1] ← %2");
                                     EMIT_LOG(regstderef.arg(regToString[Register::dst], regToString[Register::src]), QString::number(reg##dst));\
                                     emit memoryUpdated(reg##dst, reg##src, OperationType::Write)
 
-// FIXME: check if the Z S V registers need to be updated here in the ui(?), as the macro is used in an internal action as well
 #define REG_INCR(dst)   reg##dst++; \
                         reg##dst &= 0b11111111111111111111; \
                         EMIT_LOG(regincr.arg(regToString[Register::dst]), QString::number(reg##dst)); \
@@ -260,7 +243,19 @@ void TrnEmu::run()
                     case TrnOpcodes::ENA:
                         EMIT_LOG(tr("Load argument to register A"), "ENA");
 
-                        REG_LOAD_SIGN_EXT(A, IR);
+                        // Sign extension
+                        // It's pretty easy since we're always going from 13 bits to 20
+                        // If the sign bit is 1, we just OR 0b1111111000000000000
+                        // If it's not, we can just leave it as-is, as it will default to 0 due to how REG_LOAD_MASK works
+                        regA = regIR & 0b1111111111111;
+                        if(regA & 0b1000000000000)
+                            regA |= 0b11111110000000000000;
+                        EMIT_LOG(regassignmask.arg(regToString[Register::A], regToString[Register::IR],
+                            QString("0b1111111111111")),
+                            QString::number(regA)
+                        );
+                        emit registerUpdated(Register::IR, OperationType::Read, regIR);
+                        emit registerUpdated(Register::A, OperationType::Write, regA);
 
                         PHASE_END();
                         break;

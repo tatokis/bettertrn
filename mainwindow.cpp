@@ -634,7 +634,6 @@ void MainWindow::openWithDefaultApp(QString path)
 
 void MainWindow::on_clockSlider_valueChanged(int value)
 {
-    qDebug() << value;
     // Block the signals to not create an endless loop
     ui->clockSpinBox->blockSignals(true);
     ui->clockSpinBox->setValue(value);
@@ -644,7 +643,6 @@ void MainWindow::on_clockSlider_valueChanged(int value)
 
 void MainWindow::on_clockSpinBox_valueChanged(int value)
 {
-    qDebug() << "spin value changed" << value;
     ui->clockSlider->blockSignals(true);
     ui->clockSlider->setValue(value);
     ui->clockSlider->blockSignals(false);

@@ -9,7 +9,6 @@
 #include "asmlabelarg.h"
 
 #define VEC_APPEND(val) if(outvec.size() < currentmempos + 1) outvec.resize(currentmempos + 1); outvec[currentmempos] = val; currentmempos++
-//#define OPARG(op, val)          case TrnOpcodes::op: opargs = val; break
 
 QHash<QString, TrnOpcodes::TrnOpcode> AsmParser::opmap;
 QHash<QString, quint16> AsmParser::opargmap;
@@ -25,7 +24,7 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
     quint64 lnum = 0;
     // A regex here is probably not a good idea, but it's good enough for now.
     // Famous last words!
-    QRegularExpression regex("^([A-Z\\d]+:)?[ \\t]*([A-Z,]+)[ \\t]*(.+)?$", QRegularExpression::MultilineOption);
+    QRegularExpression regex("^[ \\t]*([A-Za-z\\d]+:)?[ \\t]*([A-Z,]+)[ \\t]*(.+)?$", QRegularExpression::MultilineOption);
     int currentmempos = 0;
     QString curprogname;
 
