@@ -8,7 +8,6 @@
 class TrnEmu : public QThread
 {
 Q_OBJECT
-//Q_PROPERTY(Reg state READ state NOTIFY stateChanged)
 public:
     TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, QObject* parent);
     ~TrnEmu();
@@ -90,6 +89,7 @@ public:
         DCI,
     } InPlaceRegUpdateArg;
 
+    void setDelay(unsigned long interval);
 public slots:
     void step();
 private:
@@ -99,6 +99,7 @@ private:
     quint8 regSC, regF, regV, regZ, regS, regH;
     inline void reset() { regBR = regAR = regA = regX = regIR = regSP = regI = regSC = regCLOCK = regF = regV = regZ = regS = regH = regPC = 0; }
     QMutex* _isProcessing;
+    QMutex* _intervalMutex;
     unsigned long _sleepInterval;
     QWaitCondition* _cond;
     QWaitCondition* _inputCond;
@@ -107,6 +108,8 @@ private:
     bool overflow;
     // Private internal functions that should only be called by the emu thread
     void updateFlagReg(quint8& reg, quint8 isFlag, Register regEnum);
+    void clock_tick();
+    void checkpoint();
 
 signals:
     //void dataModified(Register, OperationType);

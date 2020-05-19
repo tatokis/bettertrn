@@ -25,7 +25,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0), _pcarrow(nullptr), monofont("Monospace")
+    ui(new Ui::MainWindow), emu(nullptr), animator(new TableWidgetItemAnimator(500, this)), pcarrowpos(0), _pcarrow(nullptr), monofont("Monospace"), clockDelay(500)
 {
     ui->setupUi(this);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close, Qt::QueuedConnection);
@@ -91,6 +91,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->regH->setFont(monofont);
     // And finally the output
     ui->outputLineEdit->setFont(monofont);
+
+    // Set the default speed to 2Hz
+    ui->clockSlider->setValue(2);
 }
 
 MainWindow::~MainWindow()
@@ -128,11 +131,6 @@ void MainWindow::on_actionOpen_triggered()
 
     // If all went okay, enable the start button
     ui->startStopBtn->setEnabled(true);
-}
-
-void MainWindow::on_actionSpeed_triggered()
-{
-
 }
 
 void MainWindow::fileChangedOnDisk(QString file)
@@ -269,7 +267,7 @@ void MainWindow::on_startStopBtn_clicked()
 
     ui->startStopBtn->setText(tr("Stop"));
     ui->pauseBtn->setEnabled(true);
-    emu = new TrnEmu(500, pgmmem, this);
+    emu = new TrnEmu(clockDelay, pgmmem, this);
     connect(emu, &QThread::finished, this, &MainWindow::emuThreadStopped);
     connect(ui->stepBtn, &QPushButton::clicked, emu, &TrnEmu::step);
     connect(emu, &TrnEmu::executionError, this, [this](QString str){ QMessageBox::critical(this, tr("Fatal Execution Error"), str, QMessageBox::Ok); });
@@ -632,4 +630,30 @@ void MainWindow::openWithDefaultApp(QString path)
     }
     QUrl url = QUrl::fromLocalFile(fi.absoluteFilePath());
     QDesktopServices::openUrl(url);
+}
+
+void MainWindow::on_clockSlider_valueChanged(int value)
+{
+    qDebug() << value;
+    // Block the signals to not create an endless loop
+    ui->clockSpinBox->blockSignals(true);
+    ui->clockSpinBox->setValue(value);
+    ui->clockSpinBox->blockSignals(false);
+    setEmuDelay(value);
+}
+
+void MainWindow::on_clockSpinBox_valueChanged(int value)
+{
+    qDebug() << "spin value changed" << value;
+    ui->clockSlider->blockSignals(true);
+    ui->clockSlider->setValue(value);
+    ui->clockSlider->blockSignals(false);
+    setEmuDelay(value);
+}
+
+void MainWindow::setEmuDelay(int value)
+{
+    clockDelay = 1000 / value;
+    if(emu)
+        emu->setDelay(clockDelay);
 }

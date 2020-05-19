@@ -9,9 +9,7 @@ TableWidgetItemAnimator::TableWidgetItemAnimator(unsigned long sleepInterval, QO
     readAnim(new QPropertyAnimation(this, "readColour")), writeAnim(new QPropertyAnimation(this, "writeColour")),
     labelbg(nullptr)
 {
-    unsigned long duration = sleepInterval; //calculateDuration(sleepInterval);
-    readAnim->setDuration(duration);
-    writeAnim->setDuration(duration);
+    setDuration(sleepInterval);
     readAnim->setStartValue(green);
     writeAnim->setStartValue(red);
     readAnim->setEasingCurve(QEasingCurve::InQuint);
@@ -27,6 +25,9 @@ void TableWidgetItemAnimator::startReadAnimation(QTableWidgetItem* f, QTableWidg
     {
         // We need to stop the existing animation, because after this function returns, the TableWidgetItem may be deleted
         readAnim->stop();
+        readItemFirst->setBackgroundColor(readAnim->endValue().value<QColor>());
+        readItemSecond->setBackgroundColor(readAnim->endValue().value<QColor>());
+        readItemThird->setBackgroundColor(readAnim->endValue().value<QColor>());
     }
     readItemFirst = f;
     readItemSecond = s;
@@ -42,6 +43,9 @@ void TableWidgetItemAnimator::startWriteAnimation(QTableWidgetItem* f, QTableWid
     {
         // We need to stop the existing animation, because after this function returns, the TableWidgetItem may be deleted
         writeAnim->stop();
+        writeItemFirst->setBackgroundColor(writeAnim->endValue().value<QColor>());
+        writeItemSecond->setBackgroundColor(writeAnim->endValue().value<QColor>());
+        writeItemThird->setBackgroundColor(writeAnim->endValue().value<QColor>());
     }
     writeItemFirst = f;
     writeItemSecond = s;
@@ -60,7 +64,7 @@ void TableWidgetItemAnimator::startLabelAnimation(AnimatedLabel* l, const TrnEmu
         labelbg = new QColor(l->palette().window().color());
 
     QPropertyAnimation* anim = new QPropertyAnimation(l, "bgColour");
-    anim->setDuration(500);
+    anim->setDuration(sleepDuration);
     switch(op)
     {
         case TrnEmu::Read:

@@ -18,9 +18,9 @@ public:
     void startReadAnimation(QTableWidgetItem* f, QTableWidgetItem* s, QTableWidgetItem* t, const QColor& c);
     void startWriteAnimation(QTableWidgetItem* f, QTableWidgetItem* s, QTableWidgetItem* t, const QColor& c);
     inline void setDuration(unsigned long sleepInterval) {
-        unsigned long duration = sleepInterval;
-        readAnim->setDuration(duration);
-        writeAnim->setDuration(duration);
+        sleepDuration = sleepInterval;
+        readAnim->setDuration(sleepInterval);
+        writeAnim->setDuration(sleepInterval);
     }
     void startLabelAnimation(AnimatedLabel* l, const TrnEmu::OperationType op);
     void setReadColour(const QColor& c);
@@ -44,6 +44,7 @@ private:
     QPropertyAnimation* readAnim;
     QPropertyAnimation* writeAnim;
     QColor* labelbg;
+    unsigned long sleepDuration;
 };
 
 #endif // TABLEWIDGETITEMANIMATOR_H

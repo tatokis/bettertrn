@@ -98,11 +98,6 @@ static const QString regstderef("[%1] ← %2");
                         EMIT_LOG(regincr.arg(regToString[Register::dst]), QString::number(reg##dst)); \
                         emit registerUpdated(Register::dst, OperationType::InPlace, reg##dst)
 
-// Same as above, but with a different log message
-#define CLOCK_TICK()    regCLOCK++; \
-                        EMIT_LOG(clockpulse, QString::number(regCLOCK)); \
-                        emit registerUpdated(Register::CLOCK, OperationType::InPlace, regCLOCK)
-
 #define REG_DECR(dst)   reg##dst--; \
                         reg##dst &= 0b11111111111111111111; \
                         EMIT_LOG(regdecr.arg(regToString[Register::dst]), QString::number(reg##dst)); \
@@ -112,22 +107,15 @@ static const QString regstderef("[%1] ← %2");
                         EMIT_LOG(regzero.arg(regToString[Register::dst]), QString::number(reg##dst)); \
                         emit registerUpdated(Register::dst, OperationType::InPlace, reg##dst)
 
-#define CHECKPOINT      QThread::msleep(_sleepInterval); \
-                        { \
-                            QMutexLocker l(_isProcessing); \
-                            if(_shouldPause) \
-                                _cond->wait(_isProcessing); \
-                        }
-
 #define PHASE_END()     REG_INCR(SC); \
                         qDebug() << "New SC value" << regSC; \
-                        CHECKPOINT
+                        checkpoint()
 
 #define DO_READ()   REG_LOAD_DEREF(BR, AR)
 #define DO_WRITE()  REG_STORE_DEREF(AR, BR)
 
 TrnEmu::TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, QObject* parent) :
-    QThread(parent), _memory(pgm), _isProcessing(new QMutex()), _sleepInterval(sleepInterval), _cond(new QWaitCondition()),
+    QThread(parent), _memory(pgm), _isProcessing(new QMutex()), _intervalMutex(new QMutex()), _sleepInterval(sleepInterval), _cond(new QWaitCondition()),
     _inputCond(new QWaitCondition()), _shouldPause(false), _paused(false), overflow(false)
 {
     reset();
@@ -138,6 +126,7 @@ TrnEmu::~TrnEmu()
     delete _cond;
     delete _inputCond;
     delete _isProcessing;
+    delete _intervalMutex;
 }
 
 void TrnEmu::run()
@@ -145,7 +134,7 @@ void TrnEmu::run()
     while(!isInterruptionRequested())
     {
         // Tick!
-        CLOCK_TICK();
+        clock_tick();
         quint8 opcode;
 
         switch(regF)
@@ -156,17 +145,17 @@ void TrnEmu::run()
                 REG_LOAD(AR, PC);
                 PHASE_END();
 
-                CLOCK_TICK();
+                clock_tick();
                 DO_READ();
                 REG_INCR(PC);
                 PHASE_END();
 
-                CLOCK_TICK();
+                clock_tick();
                 REG_LOAD(IR, BR);
                 REG_LOAD_MASK(AR, BR, 0b1111111111111);
                 PHASE_END();
 
-                CLOCK_TICK();
+                clock_tick();
                 // Detect the type of reference
                 if(regIR & 0b10000000000000) // Indexed
                     regF = 0b01;
@@ -196,7 +185,7 @@ void TrnEmu::run()
                 DO_READ();
                 PHASE_END();
 
-                CLOCK_TICK();
+                clock_tick();
                 REG_LOAD_MASK(AR, BR, 0b1111111111111);
                 regF = 0b11;
                 break;
@@ -216,7 +205,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         REG_LOAD(A, BR);
                         break;
 
@@ -225,7 +214,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         REG_LOAD(X, BR);
                         break;
 
@@ -234,7 +223,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         REG_LOAD_MASK(I, BR, 0b1111111111111);
                         break;
 
@@ -243,7 +232,7 @@ void TrnEmu::run()
                         REG_LOAD(BR, A);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_WRITE();
                         break;
 
@@ -252,7 +241,7 @@ void TrnEmu::run()
                         REG_LOAD(BR, X);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_WRITE();
                         break;
 
@@ -264,7 +253,7 @@ void TrnEmu::run()
                         emit registerUpdated(Register::BR, OperationType::Write, regBR);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_WRITE();
                         break;
 
@@ -281,11 +270,11 @@ void TrnEmu::run()
                         REG_INCR(SP);
                         REG_LOAD(BR, A);
                         PHASE_END();
-                        CLOCK_TICK();
+                        clock_tick();
 
                         REG_LOAD(AR, SP);
                         PHASE_END();
-                        CLOCK_TICK();
+                        clock_tick();
 
                         DO_WRITE();
                         break;
@@ -295,11 +284,11 @@ void TrnEmu::run()
                         REG_LOAD(AR, SP);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         REG_LOAD(A, BR);
                         REG_DECR(SP);
                         break;
@@ -363,7 +352,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         REG_LOAD_MASK(SP, BR, 0b1111111111111);
                         break;
 
@@ -372,7 +361,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         {
                             bool firstsign = regA & 0b10000000000000000000;
                             bool secondsign = regBR & 0b10000000000000000000;
@@ -393,7 +382,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         {
 
                             regBR = ~regBR;
@@ -405,7 +394,7 @@ void TrnEmu::run()
                             REG_INCR(A);
                             PHASE_END();
 
-                            CLOCK_TICK();
+                            clock_tick();
 
                             regA += regBR;
                             if(firstsign == secondsign && (regA & 0b10000000000000000000) != firstsign)
@@ -423,7 +412,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         regA &= regBR;
                         EMIT_LOG("A = A & BR", QString::number(regA));
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
@@ -435,7 +424,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         regA |= regBR;
                         EMIT_LOG("A = A | BR", QString::number(regA));
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
@@ -447,7 +436,7 @@ void TrnEmu::run()
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         regA ^= regBR;
                         EMIT_LOG("A = A ^ BR", QString::number(regA));
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
@@ -499,12 +488,12 @@ void TrnEmu::run()
                         PHASE_END();
 
                         // For some reason these are executed in the same clock cycle
-                        //CLOCK_TICK();
+                        //clock_tick();
                         REG_LOAD(AR, SP);
                         REG_LOAD_OR_MASK(BR, PC, 0b1111111111111);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_WRITE();
                         REG_LOAD_MASK(PC, IR, 0b1111111111111);
                         break;
@@ -551,7 +540,7 @@ void TrnEmu::run()
                         REG_LOAD_OR_MASK(BR, SP, 0b1111111111111);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_WRITE();
                         break;
 
@@ -593,7 +582,7 @@ void TrnEmu::run()
                             REG_LOAD(BR, A);
                             PHASE_END();
 
-                            CLOCK_TICK();
+                            clock_tick();
                             emit outputSet(regBR);
                         }
                         else
@@ -606,7 +595,7 @@ void TrnEmu::run()
                             }
                             PHASE_END();
 
-                            CLOCK_TICK();
+                            clock_tick();
                             REG_LOAD(A, BR);
                         }
                         break;
@@ -616,17 +605,17 @@ void TrnEmu::run()
                         REG_LOAD(AR, SP);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         DO_READ();
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         REG_DECR(SP);
                         REG_ZERO(F);
                         PHASE_END();
 
-                        CLOCK_TICK();
+                        clock_tick();
                         // Manually zero out SC here and go back to the start of the loop due to how this instruction has to be implemented
                         REG_ZERO(SC);
                         continue;
@@ -670,7 +659,7 @@ void TrnEmu::run()
         // We need to use a separate variable, as it gets checked on every cycle
         updateFlagReg(regV, overflow, Register::V);
 
-        CHECKPOINT;
+        checkpoint();
     }
     qDebug() << "TRN Emulation thread has ended";
 }
@@ -683,6 +672,34 @@ void TrnEmu::updateFlagReg(quint8& reg, quint8 isFlag, Register regEnum)
     QString num = QString::number(isFlag);
     EMIT_LOG(regassign.arg(regToString[regEnum], num), num);
     emit registerUpdated(regEnum, OperationType::InPlace, isFlag);
+}
+
+void TrnEmu::clock_tick()
+{
+    regCLOCK++;
+    EMIT_LOG(clockpulse, QString::number(regCLOCK));
+    emit registerUpdated(Register::CLOCK, OperationType::InPlace, regCLOCK);
+}
+
+void TrnEmu::checkpoint()
+{
+    // We have to do it this way so as to not block the main thread if the user tries to change the clock
+    // while we're sleeping here
+    _intervalMutex->lock();
+    unsigned long tempInterval = _sleepInterval;
+    _intervalMutex->unlock();
+
+    QThread::msleep(tempInterval);
+
+    QMutexLocker l(_isProcessing);
+    if(_shouldPause)
+        _cond->wait(_isProcessing);
+}
+
+void TrnEmu::setDelay(unsigned long interval)
+{
+    QMutexLocker l(_intervalMutex);
+    _sleepInterval = interval;
 }
 
 void TrnEmu::pause()

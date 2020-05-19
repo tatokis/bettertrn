@@ -24,7 +24,6 @@ private slots:
     void on_actionAbout_Qt_triggered();
     void on_actionAbout_BetterTRN_triggered();
     void on_actionOpen_triggered();
-    void on_actionSpeed_triggered();
     void fileChangedOnDisk(QString file);
     void on_startStopBtn_clicked();
     void emuThreadStopped();
@@ -36,8 +35,9 @@ private slots:
     void registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, quint32 val);
     void on_inputLineEdit_editingFinished();
     void on_actionTRN_Reference_triggered();
-
     void on_actionExample_Programs_triggered();
+    void on_clockSlider_valueChanged(int value);
+    void on_clockSpinBox_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;
@@ -56,6 +56,8 @@ private:
     void askEmuThreadToStop();
     QFont monofont;
     void openWithDefaultApp(QString path);
+    unsigned long clockDelay;
+    void setEmuDelay(int value);
 };
 
 #endif // MAINWINDOW_H
