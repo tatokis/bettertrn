@@ -772,7 +772,7 @@
           <item>
            <widget class="QTableWidget" name="memoryTable">
             <property name="editTriggers">
-             <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+             <set>QAbstractItemView::NoEditTriggers</set>
             </property>
             <property name="dragDropOverwriteMode">
              <bool>false</bool>
