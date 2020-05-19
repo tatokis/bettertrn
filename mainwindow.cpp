@@ -189,7 +189,6 @@ int MainWindow::loadNewFile(QString file)
     // Clear the vector before loading the new file
     pgmmem.clear();
     // Call the correct function for asm or mif
-    // FIXME: Maybe in the future use content autodetect instead of the file extension
     QString err;
     int line = (file.toLower().endsWith(".asm") ? AsmParser::Parse(f, pgmmem, err) : MifSerializer::MifToVector(f, pgmmem, err));
 

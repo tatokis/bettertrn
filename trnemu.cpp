@@ -351,7 +351,6 @@ void TrnEmu::run()
                                 REG_DECR(I);
                                 break;
                         }
-                        //PHASE_END(); // This might not be needed. FIXME: investigate
                         break;
 
                     case TrnOpcodes::ENI:
@@ -556,7 +555,6 @@ void TrnEmu::run()
                         DO_WRITE();
                         break;
 
-                    // FIXME: Test SAXL/SAXR properly
                     case TrnOpcodes::SAXL:
                     {
                         // Combine A and X into a 64 bit register
@@ -702,7 +700,6 @@ void TrnEmu::resume()
     _paused = false;
 }
 
-// FIXME: This deadlocks if the user tries to stop the emulator while it's waiting for input
 void TrnEmu::setInput(quint32 input)
 {
     regBR = input;

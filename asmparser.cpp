@@ -21,8 +21,7 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
 
     // Go through each line
     QByteArray ba;
-    // FIXME: maybe too much data?
-    ba = infile.readLine();
+    ba = infile.readLine(512);
     quint64 lnum = 0;
     // A regex here is probably not a good idea, but it's good enough for now.
     // Famous last words!
@@ -94,7 +93,6 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
             label.chop(1);
             qDebug() << "Label" << label;
             // Add address
-            // FIXME: This may not be correct
             symboltable[label] = currentmempos;
             qDebug() << "LABELPOS" << currentmempos;
         }
@@ -223,12 +221,16 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
         }
         else
         {
-            // FIXME: check for empty args
             if(insn == "CON")
             {
                 // Insert data to memory
                 // Resize the memory first if needed
                 int argcount = arglistint.count();
+                if(!argcount)
+                {
+                    errstr = QObject::tr("No arguments passed to CON");
+                    return lnum;
+                }
                 qDebug() << "CON mempos" << currentmempos;
                 if(outvec.size() < currentmempos + argcount)
                 {
@@ -335,7 +337,6 @@ int AsmParser::Parse(QFile& infile, QVector<quint32>& outvec, QString& errstr)
         qDebug() << QString::number(finalres & 0b1111111111111, 2);
         // If all went well, add the result to the instruction
         outvec[a.addr] |= (finalres & 0b1111111111111);
-        // FIXME: How on earth does it store negative numbers?
         if(finalres < 0)
             outvec[a.addr] = ~outvec[a.addr] + 1;
     }
