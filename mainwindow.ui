@@ -47,6 +47,12 @@
           </property>
           <item row="1" column="3">
            <widget class="AnimatedLabel" name="regX">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -115,6 +121,12 @@
           </item>
           <item row="0" column="1">
            <widget class="AnimatedLabel" name="regBR">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Buffer Register</string>
             </property>
@@ -147,6 +159,12 @@
           </item>
           <item row="8" column="3">
            <widget class="AnimatedLabel" name="regS">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Sign</string>
             </property>
@@ -166,6 +184,12 @@
           </item>
           <item row="8" column="1">
            <widget class="AnimatedLabel" name="regF2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -221,6 +245,12 @@
           </item>
           <item row="2" column="1">
            <widget class="AnimatedLabel" name="regSP">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Stack Pointer</string>
             </property>
@@ -250,6 +280,12 @@
           </item>
           <item row="5" column="3">
            <widget class="AnimatedLabel" name="clockValue">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Clock</string>
             </property>
@@ -269,6 +305,12 @@
           </item>
           <item row="2" column="3">
            <widget class="AnimatedLabel" name="regI">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string/>
             </property>
@@ -288,6 +330,12 @@
           </item>
           <item row="9" column="3">
            <widget class="AnimatedLabel" name="regH">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Halt</string>
             </property>
@@ -307,6 +355,12 @@
           </item>
           <item row="0" column="3">
            <widget class="AnimatedLabel" name="regA">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Accumulator</string>
             </property>
@@ -326,6 +380,12 @@
           </item>
           <item row="7" column="3">
            <widget class="AnimatedLabel" name="regZ">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Zero</string>
             </property>
@@ -345,6 +405,12 @@
           </item>
           <item row="5" column="1">
            <widget class="AnimatedLabel" name="regSC">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>State Counter</string>
             </property>
@@ -364,6 +430,12 @@
           </item>
           <item row="9" column="1">
            <widget class="AnimatedLabel" name="regV">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Overflow</string>
             </property>
@@ -422,6 +494,12 @@
           </item>
           <item row="1" column="1">
            <widget class="AnimatedLabel" name="regAR">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Address Register</string>
             </property>
@@ -454,6 +532,12 @@
           </item>
           <item row="3" column="3">
            <widget class="AnimatedLabel" name="regPC">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Program Counter</string>
             </property>
@@ -473,6 +557,12 @@
           </item>
           <item row="3" column="1">
            <widget class="AnimatedLabel" name="regIR">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string>Instruction Register</string>
             </property>
@@ -505,6 +595,12 @@
           </item>
           <item row="7" column="1">
            <widget class="AnimatedLabel" name="regF1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="frameShape">
              <enum>QFrame::WinPanel</enum>
             </property>
@@ -662,13 +758,6 @@
             </property>
             <property name="text">
              <string>Step</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="resetBtn">
-            <property name="text">
-             <string>Reset</string>
             </property>
            </widget>
           </item>
