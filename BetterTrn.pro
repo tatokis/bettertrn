@@ -62,7 +62,12 @@ html.path = $$OUT_PWD/docs/html/ref.files
 html_doc.files = docs/html/ref.htm docs/html/ref_orig.htm
 html_doc.path = $$OUT_PWD/docs/html/
 
+RC_ICONS = bettertrn.ico
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res.qrc
