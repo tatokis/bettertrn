@@ -135,6 +135,8 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::fileChangedOnDisk(QString file)
 {
+    // Demand attention
+    QApplication::alert(this);
     // Don't allow any more events to go through while we're waiting for the user to answer
     fswatcher.blockSignals(true);
     QFileInfo fi(file);
