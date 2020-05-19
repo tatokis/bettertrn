@@ -496,6 +496,7 @@ void MainWindow::registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, qui
         case TrnEmu::Register::CLOCK:
             // Clock is not in binary
             ui->clockValue->setText(QString("%1").arg(val, 7, 10, QChar('0')));
+            animator->startLabelAnimation(ui->clockValue, t);
             return;
         default:
             qDebug() << "Unknown 32 bit register" << val;
