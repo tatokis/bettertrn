@@ -22,7 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++14
+CONFIG += c++14 file_copies
 
 SOURCES += \
         main.cpp \
@@ -48,6 +48,12 @@ HEADERS += \
 FORMS += \
         mainwindow.ui \
     aboutwindow.ui
+
+COPIES += pdf
+pdf.files = docs/TRNdocument-v2.pdf
+pdf.path = $$OUT_PWD/docs
+
+# FIXME: add the rest of the docs
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

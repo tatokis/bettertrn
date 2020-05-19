@@ -35,6 +35,7 @@ private slots:
     void registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, quint16 val);
     void registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, quint32 val);
     void on_inputLineEdit_editingFinished();
+    void on_actionTRN_Reference_triggered();
 
 private:
     Ui::MainWindow *ui;

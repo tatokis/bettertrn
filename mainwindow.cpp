@@ -16,6 +16,7 @@
 #include <QScrollBar>
 #include <QToolButton>
 #include <QFontDatabase>
+#include <QDesktopServices>
 
 #define MEM_STR_FORMAT(a, b, ai, di)    QTableWidgetItem* a = new QTableWidgetItem(QString::number(ai)); \
                                         a->setFont(monofont); \
@@ -607,4 +608,18 @@ void MainWindow::on_inputLineEdit_editingFinished()
 
     emu->setInput(parsed);
     ui->statusBar->clearMessage();
+}
+
+void MainWindow::on_actionTRN_Reference_triggered()
+{
+    // Open the PDF
+    // First, get the path to the file
+    QFileInfo fi("docs/TRNdocument-v2.pdf");
+    if(!fi.exists())
+    {
+        QMessageBox::critical(this, tr("Documentation not found"), tr("Could not open the documentation.\nFile not found"));
+        return;
+    }
+    QUrl url = QUrl::fromLocalFile(fi.absoluteFilePath());
+    QDesktopServices::openUrl(url);
 }

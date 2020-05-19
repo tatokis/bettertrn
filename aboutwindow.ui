@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>200</height>
+    <width>402</width>
+    <height>247</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -42,7 +42,17 @@
       </font>
      </property>
      <property name="text">
-      <string>BetterTRN v1.0 Beta</string>
+      <string>BetterTRN</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>v1.0 Beta</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -68,7 +78,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>By Tasos Sahanidis&lt;br&gt;&lt;a href=&quot;mailto:bettertrn@tasossah.com&quot;&gt;bettertrn@tasossah.com&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://github.com/tatokis&quot;&gt;https://github.com/tatokis&lt;/a&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;By Tasos Sahanidis&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;a href=&quot;mailto:bettertrn@tasossah.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;bettertrn@tasossah.com&lt;/span&gt;&lt;/a&gt;&lt;br/&gt;&lt;a href=&quot;https://github.com/tatokis&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/tatokis&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
