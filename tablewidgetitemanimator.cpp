@@ -25,9 +25,10 @@ void TableWidgetItemAnimator::startReadAnimation(QTableWidgetItem* f, QTableWidg
     {
         // We need to stop the existing animation, because after this function returns, the TableWidgetItem may be deleted
         readAnim->stop();
-        readItemFirst->setBackgroundColor(readAnim->endValue().value<QColor>());
-        readItemSecond->setBackgroundColor(readAnim->endValue().value<QColor>());
-        readItemThird->setBackgroundColor(readAnim->endValue().value<QColor>());
+        QBrush b(readAnim->endValue().value<QColor>());
+        readItemFirst->setBackground(b);
+        readItemSecond->setBackground(b);
+        readItemThird->setBackground(b);
     }
     readItemFirst = f;
     readItemSecond = s;
@@ -43,9 +44,10 @@ void TableWidgetItemAnimator::startWriteAnimation(QTableWidgetItem* f, QTableWid
     {
         // We need to stop the existing animation, because after this function returns, the TableWidgetItem may be deleted
         writeAnim->stop();
-        writeItemFirst->setBackgroundColor(writeAnim->endValue().value<QColor>());
-        writeItemSecond->setBackgroundColor(writeAnim->endValue().value<QColor>());
-        writeItemThird->setBackgroundColor(writeAnim->endValue().value<QColor>());
+        QBrush b(writeAnim->endValue().value<QColor>());
+        writeItemFirst->setBackground(b);
+        writeItemSecond->setBackground(b);
+        writeItemThird->setBackground(b);
     }
     writeItemFirst = f;
     writeItemSecond = s;
@@ -81,7 +83,7 @@ void TableWidgetItemAnimator::startLabelAnimation(AnimatedLabel* l, const TrnEmu
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void TableWidgetItemAnimator::setReadColour(const QColor&c)
+void TableWidgetItemAnimator::setReadColour(const QColor& c)
 {
     if(!readItemFirst)
         return;
@@ -91,7 +93,7 @@ void TableWidgetItemAnimator::setReadColour(const QColor&c)
     readItemThird->setBackground(b);
 }
 
-void TableWidgetItemAnimator::setWriteColour(const QColor&c)
+void TableWidgetItemAnimator::setWriteColour(const QColor& c)
 {
     if(!writeItemFirst)
         return;
