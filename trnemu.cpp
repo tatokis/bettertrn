@@ -10,10 +10,11 @@
 // A++
 // A--
 // AR = (IR & 0b1111111111111) + I
-// The last one happens when doing an indexed reference
+// The last one happens when doing an indexed reference, thus we will not implement it,
+// as it seems to have been done by accident
 
 // Overflow is always set to 0 after a JPO
-// Else, it's updated instantly
+// Else, it's updated on every function that might cause overflow
 
 // The S register is set to the same value as the A register sign bit (19)
 // It is updated after every phase
@@ -311,7 +312,16 @@ void TrnEmu::run()
                         {
                             case InPlaceRegUpdateArg::INA:
                                 EMIT_LOG(tr("Increment register A"), "INA");
-                                REG_INCR(A);
+                                EMIT_LOG(tr("Decrement register A"), "DCA");
+                                {
+                                    bool firstsign = regA & 0b10000000000000000000;
+
+                                    REG_INCR(A);
+                                    if(firstsign == false && (regA & 0b10000000000000000000) != firstsign)
+                                        overflow = true;
+                                    else
+                                        overflow = false;
+                                }
                                 break;
                             case InPlaceRegUpdateArg::INX:
                                 EMIT_LOG(tr("Increment register X"), "INX");
@@ -323,7 +333,15 @@ void TrnEmu::run()
                                 break;
                             case InPlaceRegUpdateArg::DCA:
                                 EMIT_LOG(tr("Decrement register A"), "DCA");
-                                REG_DECR(A);
+                                {
+                                    bool firstsign = regA & 0b10000000000000000000;
+
+                                    REG_DECR(A);
+                                    if(firstsign == true && (regA & 0b10000000000000000000) != firstsign)
+                                        overflow = true;
+                                    else
+                                        overflow = false;
+                                }
                                 break;
                             case InPlaceRegUpdateArg::DCX:
                                 EMIT_LOG(tr("Decrement register X"), "DCX");
@@ -357,8 +375,16 @@ void TrnEmu::run()
                         PHASE_END();
 
                         CLOCK_TICK();
-                        //ADD_WITH_OVERFLOW_CHECK(A, BR);
-                        regA += regBR;
+                        {
+                            bool firstsign = regA & 0b10000000000000000000;
+                            bool secondsign = regBR & 0b10000000000000000000;
+
+                            regA += regBR;
+                            if(firstsign == secondsign && (regA & 0b10000000000000000000) != firstsign)
+                                overflow = true;
+                            else
+                                overflow = false;
+                        }
                         emit executionLog(regCLOCK, "A = A + BR", QString::number(regA));
                         emit registerUpdated(Register::BR, OperationType::Read, regBR);
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
@@ -370,14 +396,26 @@ void TrnEmu::run()
                         PHASE_END();
 
                         CLOCK_TICK();
-                        regBR = ~regBR;
-                        emit executionLog(regCLOCK, "BR = ~BR", QString::number(regA));
-                        emit registerUpdated(Register::BR, OperationType::InPlace, regBR);
-                        REG_INCR(A);
-                        PHASE_END();
+                        {
 
-                        CLOCK_TICK();
-                        regA += regBR;
+                            regBR = ~regBR;
+                            emit executionLog(regCLOCK, "BR = ~BR", QString::number(regA));
+                            emit registerUpdated(Register::BR, OperationType::InPlace, regBR);
+                            bool firstsign = regA & 0b10000000000000000000;
+                            bool secondsign = regBR & 0b10000000000000000000;
+
+                            REG_INCR(A);
+                            PHASE_END();
+
+                            CLOCK_TICK();
+
+                            regA += regBR;
+                            if(firstsign == secondsign && (regA & 0b10000000000000000000) != firstsign)
+                                overflow = true;
+                            else
+                                overflow = false;
+                        }
+
                         emit registerUpdated(Register::A, OperationType::InPlace, regA);
                         emit registerUpdated(Register::BR, OperationType::Read, regBR);
                         break;
