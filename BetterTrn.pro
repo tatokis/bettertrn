@@ -49,14 +49,18 @@ FORMS += \
         mainwindow.ui \
     aboutwindow.ui
 
-COPIES += pdf examples
+COPIES += pdf examples html html_doc
 pdf.files = docs/TRNdocument-v2.pdf
 pdf.path = $$OUT_PWD/docs
 
 examples.files = $$files(examples/*)
 examples.path = $$OUT_PWD/examples
 
-# FIXME: add the rest of the docs
+html.files = $$files(docs/html/ref.files/*)
+html.path = $$OUT_PWD/docs/html/ref.files
+
+html_doc.files = docs/html/ref.htm docs/html/ref_orig.htm
+html_doc.path = $$OUT_PWD/docs/html/
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
