@@ -12,8 +12,8 @@ TableWidgetItemAnimator::TableWidgetItemAnimator(unsigned long sleepInterval, QO
     setDuration(sleepInterval);
     readAnim->setStartValue(green);
     writeAnim->setStartValue(red);
-    readAnim->setEasingCurve(QEasingCurve::InQuint);
-    writeAnim->setEasingCurve(QEasingCurve::InQuint);
+    readAnim->setEasingCurve(QEasingCurve::InOutCubic);
+    writeAnim->setEasingCurve(QEasingCurve::InOutCubic);
     // Needed to let the start functions retrigger
     connect(readAnim, &QPropertyAnimation::finished, this, [this]() { this->readItemFirst = this->readItemSecond = this->readItemThird = nullptr; });
     connect(writeAnim, &QPropertyAnimation::finished, this, [this]() { this->writeItemFirst = this->writeItemSecond = this->writeItemThird = nullptr; });
@@ -76,7 +76,7 @@ void TableWidgetItemAnimator::startLabelAnimation(AnimatedLabel* l, const TrnEmu
         case TrnEmu::InPlace:
             anim->setStartValue(orange);
     }
-    anim->setEasingCurve(QEasingCurve::InQuint);
+    anim->setEasingCurve(QEasingCurve::InOutCubic);
     anim->setEndValue(*labelbg);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }

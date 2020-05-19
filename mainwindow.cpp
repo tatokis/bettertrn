@@ -652,6 +652,7 @@ void MainWindow::on_clockSpinBox_valueChanged(int value)
 void MainWindow::setEmuDelay(int value)
 {
     clockDelay = 1000 / value;
+    animator->setDuration(clockDelay);
     if(emu)
         emu->setDelay(clockDelay);
 }
