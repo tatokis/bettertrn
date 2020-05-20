@@ -28,6 +28,7 @@ static const QString regdecr = QObject::tr("Register %1--");
 static const QString regzero = QObject::tr("Register %1 = 0");
 static const QString regassign("%1 ← %2");
 static const QString regassignmask("%1 ← (%2 & %3)");
+static const QString regassignandmask("%1 ← %1 & (%2 & %3)");
 static const QString regassignormask("%1 ← %1 | (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
 static const QString regldderef("%1 ← [%2]");
@@ -237,6 +238,7 @@ void TrnEmu::run()
                         EMIT_LOG(tr("Store register I's data to the argument address"), "STI");
                         // Zero the opcode and E/D fields, and then copy the data from the I register
                         regBR &= (regI & 0b1111111111111);
+                        EMIT_LOG(regassignandmask.arg("BR", "I", "0b1111111111111"), QString::number(regBR));
                         emit registerUpdated(Register::I, OperationType::Read, regI);
                         emit registerUpdated(Register::BR, OperationType::Write, regBR);
                         PHASE_END();
