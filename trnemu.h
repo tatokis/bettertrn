@@ -9,7 +9,7 @@ class TrnEmu : public QThread
 {
 Q_OBJECT
 public:
-    TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, QObject* parent);
+    TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, bool logExecutionPhaseOnly, QObject* parent);
     ~TrnEmu();
     void run();
     void pause();
@@ -106,6 +106,8 @@ private:
     bool _shouldPause;
     bool _paused; // This is NOT protected by a mutex. Must only be used by the parent thread. Same as getPaused
     bool overflow;
+    bool _logAllPhases; // emu thread only
+    bool _printToLog; // likewise
     // Private internal functions that should only be called by the emu thread
     void updateFlagReg(quint8& reg, quint8 isFlag, Register regEnum);
     void clock_tick();

@@ -91,9 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->regH->setFont(monofont);
     // And finally the output
     ui->outputLineEdit->setFont(monofont);
-
-    // Set the default speed to 2Hz
-    ui->clockSlider->setValue(2);
 }
 
 MainWindow::~MainWindow()
@@ -269,7 +266,8 @@ void MainWindow::on_startStopBtn_clicked()
 
     ui->startStopBtn->setText(tr("Stop"));
     ui->pauseBtn->setEnabled(true);
-    emu = new TrnEmu(clockDelay, pgmmem, this);
+    ui->actionLog_Execution_Phase_Only->setEnabled(false);
+    emu = new TrnEmu(clockDelay, pgmmem, ui->actionLog_Execution_Phase_Only->isChecked(), this);
     connect(emu, &QThread::finished, this, &MainWindow::emuThreadStopped);
     connect(ui->stepBtn, &QPushButton::clicked, emu, &TrnEmu::step);
     connect(emu, &TrnEmu::executionError, this, [this](QString str){ QMessageBox::critical(this, tr("Fatal Execution Error"), str, QMessageBox::Ok); });
@@ -335,6 +333,7 @@ void MainWindow::emuThreadStopped()
     emu->deleteLater();
     emu = nullptr;
     ui->statusBar->showMessage(tr("Emulation finished"));
+    ui->actionLog_Execution_Phase_Only->setEnabled(true);
 }
 
 void MainWindow::on_actionSave_Memory_Image_triggered()

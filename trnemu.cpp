@@ -33,7 +33,8 @@ static const QString clockpulse = QObject::tr("Clock pulse");
 static const QString regldderef("%1 ← [%2]");
 static const QString regstderef("[%1] ← %2");
 
-#define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
+#define EMIT_LOG(arg, val)  if(_logAllPhases || _printToLog) \
+                                emit executionLog(regCLOCK, arg, val)
 
 #define REG_LOAD(dst, src)  reg##dst = reg##src; \
                             EMIT_LOG(regassign.arg(regToString[Register::dst], regToString[Register::src]), QString::number(reg##src)); \
@@ -88,15 +89,21 @@ static const QString regstderef("[%1] ← %2");
                         EMIT_LOG(regzero.arg(regToString[Register::dst]), QString::number(reg##dst)); \
                         emit registerUpdated(Register::dst, OperationType::InPlace, reg##dst)
 
-#define PHASE_END()     REG_INCR(SC); \
-                        checkpoint()
+// Avoid printing SC++ during execution only logging
+#define PHASE_END()     { \
+                            bool restore = _printToLog; \
+                            _printToLog = false; \
+                            REG_INCR(SC); \
+                            checkpoint(); \
+                            _printToLog = restore; \
+                        }
 
 #define DO_READ()   REG_LOAD_DEREF(BR, AR)
 #define DO_WRITE()  REG_STORE_DEREF(AR, BR)
 
-TrnEmu::TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, QObject* parent) :
+TrnEmu::TrnEmu(unsigned long sleepInterval, QVector<quint32> pgm, bool logExecutionPhaseOnly, QObject* parent) :
     QThread(parent), _memory(pgm), _isProcessing(new QMutex()), _intervalMutex(new QMutex()), _sleepInterval(sleepInterval), _cond(new QWaitCondition()),
-    _inputCond(new QWaitCondition()), _shouldPause(false), _paused(false), overflow(false)
+    _inputCond(new QWaitCondition()), _shouldPause(false), _paused(false), overflow(false), _logAllPhases(!logExecutionPhaseOnly), _printToLog(false)
 {
     reset();
 }
@@ -172,6 +179,7 @@ void TrnEmu::run()
 
             case 0b11:
                 opcode = (regIR >> 15) & 0b11111;
+                _printToLog = true;
                 EMIT_LOG("Executing instruction", QString());
                 // Decode and execute
                 switch(opcode)
@@ -626,6 +634,7 @@ void TrnEmu::run()
                         return;
                 }
                 regF = 0b00;
+                _printToLog = false;
                 break;
 
         }
@@ -667,9 +676,14 @@ void TrnEmu::updateFlagReg(quint8& reg, quint8 isFlag, Register regEnum)
 
 void TrnEmu::clock_tick()
 {
+    // Hide the clock in the logs when not needed
+    bool restore = _printToLog;
+    _printToLog = false;
     regCLOCK++;
     EMIT_LOG(clockpulse, QString::number(regCLOCK));
     emit registerUpdated(Register::CLOCK, OperationType::InPlace, regCLOCK);
+    // restore the previous print to log state
+    _printToLog = restore;
 }
 
 void TrnEmu::checkpoint()

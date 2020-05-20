@@ -751,6 +751,9 @@
               <property name="pageStep">
                <number>5</number>
               </property>
+              <property name="value">
+               <number>2</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -769,6 +772,9 @@
               </property>
               <property name="singleStep">
                <number>1</number>
+              </property>
+              <property name="value">
+               <number>2</number>
               </property>
              </widget>
             </item>
@@ -996,7 +1002,7 @@
     <property name="title">
      <string>Preferences</string>
     </property>
-    <addaction name="actionLog_internal_CPU_Execution"/>
+    <addaction name="actionLog_Execution_Phase_Only"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPreferences"/>
@@ -1038,15 +1044,18 @@
     <string>Save Memory Image</string>
    </property>
   </action>
-  <action name="actionLog_internal_CPU_Execution">
+  <action name="actionLog_Execution_Phase_Only">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
-    <string>Log internal CPU Execution</string>
+    <string>Log Execution Phase Only</string>
+   </property>
+   <property name="toolTip">
+    <string>This can only be modified while the emulator is stopped</string>
    </property>
   </action>
   <action name="actionExample_Programs">
