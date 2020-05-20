@@ -5,9 +5,9 @@
 #include "trnopcodes.h"
 
 // Note: The original TRN checks for overflow only under the following conditions
-// A = A + BR
-// A++
-// A--
+// A = A + BR (ADA/SUB)
+// A++ (INA)
+// A-- (DCA)
 // AR = (IR & 0b1111111111111) + I
 // The last one happens when doing an indexed reference, thus we will not implement it,
 // as it seems to have been done by accident
@@ -32,8 +32,6 @@ static const QString regassignormask("%1 ← %1 | (%2 & %3)");
 static const QString clockpulse = QObject::tr("Clock pulse");
 static const QString regldderef("%1 ← [%2]");
 static const QString regstderef("[%1] ← %2");
-
-// FIXME: convert some of these into functions
 
 #define EMIT_LOG(arg, val)   emit executionLog(regCLOCK, arg, val)
 
@@ -91,7 +89,6 @@ static const QString regstderef("[%1] ← %2");
                         emit registerUpdated(Register::dst, OperationType::InPlace, reg##dst)
 
 #define PHASE_END()     REG_INCR(SC); \
-                        qDebug() << "New SC value" << regSC; \
                         checkpoint()
 
 #define DO_READ()   REG_LOAD_DEREF(BR, AR)
@@ -290,7 +287,6 @@ void TrnEmu::run()
 
                     // Same opcode for INA, INX, INI, DCA, DCX, DCI
                     case TrnOpcodes::INA:
-                        // FIXME: Handle wrap around in macros
                         switch(regIR & 0b111)
                         {
                             case InPlaceRegUpdateArg::INA:
@@ -352,7 +348,7 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::ADA:
-                        EMIT_LOG(tr("Add registers A and BR, and store the result to A"), "ADA");
+                        EMIT_LOG(tr("Add memory value to A, and store the result to A"), "ADA");
                         DO_READ();
                         PHASE_END();
 
@@ -469,7 +465,7 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::JPO:
-                        EMIT_LOG(tr("Jump to address if overflow"), "JPO");
+                        EMIT_LOG(tr("Jump to address if overflow has occurred"), "JPO");
                         if(regV)
                         {
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
@@ -494,13 +490,12 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::JIG:
-                        EMIT_LOG(tr("Jump to address if I is greater than zero"), "JPO");
+                        EMIT_LOG(tr("Jump to address if I is greater than zero"), "JIG");
                         // Check if the first 10 bits are greater than 0, and then make sure the 20th bit is 0
                         if((regI & 0b01111111111111111111) > 0 && (regI & 0b10000000000000000000) == 0)
                             REG_LOAD_MASK(PC, BR, 0b1111111111111);
                         break;
 
-                    // More stuff here
                     case TrnOpcodes::SHAL:
                         switch(regIR & 0b11)
                         {
@@ -532,6 +527,7 @@ void TrnEmu::run()
                         break;
 
                     case TrnOpcodes::SSP:
+                        EMIT_LOG(tr("Store stack pointer to memory"), "SSP");
                         REG_LOAD_OR_MASK(BR, SP, 0b1111111111111);
                         PHASE_END();
 
@@ -638,7 +634,7 @@ void TrnEmu::run()
 
         emit registerUpdated(Register::F, OperationType::InPlace, regF);
 
-        // TRN does these at the end of each phase, so we'll do the same here, even though it's a bit wasteful
+        // TRN checks these at the end of each phase, so we'll do the same here, even though it's a bit wasteful
         // Only update the UI if the state has changed
 
         // Check for Zero
