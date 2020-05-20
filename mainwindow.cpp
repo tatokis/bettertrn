@@ -233,6 +233,7 @@ void MainWindow::askEmuThreadToStop()
 {
     ui->statusBar->showMessage(tr("Stopping emulator"));
     emu->requestInterruption();
+    ui->inputLineEdit->setEnabled(false);
     ui->startStopBtn->setEnabled(false);
     ui->pauseBtn->setEnabled(false);
     ui->stepBtn->setEnabled(false);
