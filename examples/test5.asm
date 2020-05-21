@@ -1,5 +1,5 @@
-	INP
-	OUT
-	HLT
-
-  
+NAM loopback
+INP
+OUT
+HLT
+END

@@ -339,6 +339,11 @@ void MainWindow::emuThreadStopped()
 
 void MainWindow::on_actionSave_Memory_Image_triggered()
 {
+    if(pgmmem.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Nothing in memory"), tr("There is nothing in memory. Please load a program first"));
+        return;
+    }
     QString path = QFileDialog::getSaveFileName(this, tr("Save Memory Image"), QString(), tr("Memory Image (*.mif)"));
     if(path.isEmpty())
         return;
