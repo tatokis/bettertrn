@@ -50,7 +50,8 @@ static const QString regstderef("[%1] ← %2");
                                         emit registerUpdated(Register::src, OperationType::Read, reg##src); \
                                         emit registerUpdated(Register::dst, OperationType::Write, reg##dst)
 
-#define REG_LOAD_OR_MASK(dst, src, mask)    reg##dst |= reg##src & mask; \
+#define REG_LOAD_OR_MASK(dst, src, mask)    reg##dst &= ~mask; \
+                                            reg##dst |= reg##src & mask; \
                                             EMIT_LOG(regassignormask.arg(regToString[Register::dst], regToString[Register::src], \
                                               QString("0b%1").arg(mask, 13, 2, QChar('0'))), \
                                               QString::number(reg##dst)\
