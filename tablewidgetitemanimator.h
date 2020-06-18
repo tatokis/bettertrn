@@ -27,8 +27,8 @@ public:
     void setWriteColour(const QColor& c);
     // Apparently the getters can just be stubs
     inline QColor getColour() { return QColor(); }
-
     ~TableWidgetItemAnimator();
+    void cancelIfInUse(QTableWidgetItem* itm);
 
 signals:
 

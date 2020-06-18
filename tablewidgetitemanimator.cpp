@@ -110,3 +110,17 @@ TableWidgetItemAnimator::~TableWidgetItemAnimator()
     if(labelbg)
         delete labelbg;
 }
+
+void TableWidgetItemAnimator::cancelIfInUse(QTableWidgetItem* itm)
+{
+    if(itm == readItemThird)
+    {
+        readAnim->stop();
+        readItemThird = readItemSecond = readItemFirst = nullptr;
+    }
+    else if(itm == writeItemThird)
+    {
+        writeAnim->stop();
+        writeItemThird = writeItemSecond = writeItemFirst = nullptr;
+    }
+}

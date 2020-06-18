@@ -476,6 +476,8 @@ void MainWindow::registerUpdate(TrnEmu::Register r, TrnEmu::OperationType t, qui
                 pcarrowpos = 0;
                 break;
             }
+            // Stop any animations if we are about to delete the PC
+            animator->cancelIfInUse(ui->memoryTable->item(val, 0));
             // Set it to the new PC position
             ui->memoryTable->setItem(val, 0, arrow);
             // Update the "pointer"
